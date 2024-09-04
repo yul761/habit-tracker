@@ -1,12 +1,7 @@
 import { defineStore } from 'pinia'
 import { auth } from '@/firebase/firebase.auth'
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-  type User
-} from 'firebase/auth'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { type User } from '@/types/user'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -18,15 +13,6 @@ export const useAuthStore = defineStore('auth', {
     getUser: (state) => state.user
   },
   actions: {
-    async signInWithGoogle() {
-      const provider = new GoogleAuthProvider()
-      try {
-        const result = await signInWithPopup(auth, provider)
-        this.user = result.user
-      } catch (error) {
-        console.error('Error during sign-in:', error)
-      }
-    },
     async signOutUser() {
       try {
         await signOut(auth)
@@ -39,8 +25,8 @@ export const useAuthStore = defineStore('auth', {
       this.user = user
     },
     initializeAuth() {
-      onAuthStateChanged(auth, (user) => {
-        this.user = user
+      onAuthStateChanged(auth, () => {
+        this.user = null
         this.loading = false
       })
     }
