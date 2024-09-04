@@ -2,7 +2,7 @@
   <div>
     <p v-if="loading">Loading...</p>
     <div v-else>
-      <p v-if="isAuthenticated">Welcome, {{ user.name }}</p>
+      <p v-if="isAuthenticated">Welcome, {{ user!.name }}</p>
       <button v-if="isAuthenticated" @click="signOutUser">Sign out</button>
     </div>
   </div>
@@ -13,7 +13,7 @@ import { useAuthStore } from '@/stores/auth'
 import { computed, onMounted } from 'vue'
 import googleOneTap from 'google-one-tap'
 import { jwtDecode } from 'jwt-decode'
-import { UserProfile } from '@/types/user'
+import { UserProfile, type User } from '@/types/user'
 
 const authStore = useAuthStore()
 
@@ -38,9 +38,9 @@ const googleAuthenticationHandler = () => {
       context: 'signin'
     }
 
-    googleOneTap(gisOption, (response) => {
-      const decode = jwtDecode(response.credential)
-      const user = new UserProfile({ ...decode })
+    googleOneTap(gisOption, (response: { credential: string }) => {
+      const { given_name, family_name, email, name, picture }: User = jwtDecode(response.credential)
+      const user = new UserProfile(given_name, family_name, email, name, picture)
       authStore.setUser(user)
     })
   }

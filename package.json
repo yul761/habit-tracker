@@ -15,6 +15,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@types/google-one-tap": "^1.2.6",
     "firebase": "^10.13.0",
     "google-one-tap": "^1.0.6",
     "pinia": "^2.1.7",
