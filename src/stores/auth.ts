@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { auth } from '@/firebase/firebase.auth'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { type User } from '@/types/user'
+import { type User, UserProfile } from '@/types/user'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({

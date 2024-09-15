@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import GoogleLogin from '@/components/GoogleLogin.vue'
+import LogInDropdown from '@/components/Authentication/LogInDropdown.vue'
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import GoogleLogin from '@/components/GoogleLogin.vue'
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
-      <GoogleLogin />
+      <LogInDropdown />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
