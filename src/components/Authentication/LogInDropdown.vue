@@ -16,6 +16,9 @@
         </form>
       </li>
       <li><hr class="dropdown-divider" /></li>
+      <li>
+        <button @click="authStore.googleSignIn()">login with google</button>
+      </li>
     </template>
   </Dropdown>
 </template>
@@ -23,7 +26,7 @@
 <script setup lang="ts">
 import Dropdown from '@/components/Dropdown/ButtonDropdown.vue'
 import { useAuthStore } from '@/stores/auth'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { UserProfile, type User } from '@/types/user'
 import { jwtDecode } from 'jwt-decode'
 import googleOneTap from 'google-one-tap'
@@ -31,6 +34,12 @@ import googleOneTap from 'google-one-tap'
 const authStore = useAuthStore()
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
+const googleIsAuthenticated = computed(() => authStore.googleIsAuthenticated)
+
+watch(isAuthenticated, (isAuthenticated) => {
+  console.log('isAuthenticated', isAuthenticated)
+  console.log(authStore.user)
+})
 </script>
 
 <style scoped>

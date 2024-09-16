@@ -1,24 +1,26 @@
+<template>
+  <ViewHeader>
+    <template #left>
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="50" height="50" />
+    </template>
+    <template #right>
+      <LogInDropdown v-if="!isAuthenticated" />
+      <UserProfileHeader v-if="isAuthenticated" />
+    </template>
+  </ViewHeader>
+</template>
+
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import LogInDropdown from '@/components/Authentication/LogInDropdown.vue'
+import { useAuthStore } from '@/stores/auth'
+import { computed } from 'vue'
+import UserProfileHeader from '@/components/UserProfile/UserProfileHeader.vue'
+import ViewHeader from '@/components/Header/ViewHeader.vue'
+
+const authStore = useAuthStore()
+const isAuthenticated = computed(() => authStore.isAuthenticated)
 </script>
-
-<template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <LogInDropdown />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
-</template>
 
 <style scoped>
 header {
