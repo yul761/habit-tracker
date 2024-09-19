@@ -5,6 +5,8 @@ import {
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   type User
 } from 'firebase/auth'
 
@@ -36,6 +38,22 @@ export const useAuthStore = defineStore('auth', {
       signInWithPopup(auth, provider).then((result) => {
         this.user = result.user
       })
+    },
+    async createUserWithEmailAndPassword(email: string, password: string) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        this.user = userCredential.user
+      } catch (error) {
+        console.error('Error during sign-up:', error)
+      }
+    },
+    async signInWithEmailAndPassword(email: string, password: string) {
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+        this.user = userCredential.user
+      } catch (error) {
+        console.error('Error during sign-in:', error)
+      }
     },
     initializeAuth() {
       onAuthStateChanged(auth, () => {
