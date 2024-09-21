@@ -9,6 +9,7 @@ import {
   signInWithEmailAndPassword,
   type User
 } from 'firebase/auth'
+import router from '@/router'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -43,6 +44,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         this.user = userCredential.user
+        router.push('/')
       } catch (error) {
         console.error('Error during sign-up:', error)
       }

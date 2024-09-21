@@ -3,10 +3,11 @@
     <template #button-text> Login </template>
     <template #dropdown-menu>
       <li>
-        <form class="px-4 py-3">
+        <form class="px-4 py-3" @submit.prevent="handleLogin">
           <div class="mb-3">
             <label for="email" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="email" required />
+            <input type="email" class="form-control" id="email" required v-model="email" />
+            <div v-if="email && !isEmailValid" class="text-danger">Invalid email format</div>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
@@ -15,6 +16,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 class="form-control no-right-radius"
                 id="password"
+                v-model="password"
                 required
               />
               <button
@@ -27,7 +29,19 @@
               </button>
             </div>
           </div>
-          <button type="submit" class="btn btn-outline-secondary w-100">Log-in</button>
+          <button
+            type="submit"
+            class="btn btn-outline-secondary w-100"
+            :disabled="!isEmailValid || isLoading"
+          >
+            <span>Log In</span>
+            <span
+              v-if="isLoading"
+              class="spinner-border spinner-border-sm ms-2"
+              role="status"
+              aria-hidden="true"
+            ></span>
+          </button>
           <router-link class="btn btn-link" to="/signup">Don't have an account?</router-link>
         </form>
       </li>
@@ -52,7 +66,10 @@ import { jwtDecode } from 'jwt-decode'
 import googleOneTap from 'google-one-tap'
 
 const authStore = useAuthStore()
-
+const email = ref('')
+const password = ref('')
+const isLoading = ref(false)
+const errorMessage = ref('')
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const googleIsAuthenticated = computed(() => authStore.googleIsAuthenticated)
 
@@ -61,6 +78,18 @@ watch(isAuthenticated, (isAuthenticated) => {
   console.log(authStore.user)
 })
 
+const handleLogin = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
+  try {
+    await authStore.signInWithEmailAndPassword(email.value, password.value)
+  } catch (error) {
+    errorMessage.value = 'Failed to log in. Please check your credentials and try again.'
+    console.error(error)
+  } finally {
+    isLoading.value = false
+  }
+}
 // Reactive state for password visibility
 const showPassword = ref(false)
 
@@ -69,10 +98,10 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
-const redirectToSignUp = () => {
-  // Replace with your sign-up page URL
-  window.location.href = '/signup'
-}
+const isEmailValid = computed(() => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailPattern.test(email.value)
+})
 </script>
 
 <style scoped>
@@ -97,5 +126,16 @@ const redirectToSignUp = () => {
   width: 20px;
   height: 20px;
   margin-right: 0.5rem;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>

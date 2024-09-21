@@ -35,7 +35,15 @@
           </div>
           <div v-if="confirmPassword" class="password-match-text">{{ passwordMatchText }}</div>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+        <button type="submit" class="btn btn-primary w-100" :disabled="loading">
+          <span>Sign Up</span>
+          <span
+            v-if="loading"
+            class="spinner-border spinner-border-sm ms-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+        </button>
       </form>
     </div>
   </div>
@@ -43,10 +51,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
+const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const loading = ref(false)
 
 const emailError = ref('')
 const passwordError = ref('')
@@ -55,7 +66,7 @@ const confirmPasswordError = ref('')
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
 
-const handleSignUp = () => {
+const handleSignUp = async () => {
   emailError.value = ''
   passwordError.value = ''
   confirmPasswordError.value = ''
@@ -76,9 +87,16 @@ const handleSignUp = () => {
     return
   }
 
-  // Handle sign-up logic here
-  console.log('Email:', email.value)
-  console.log('Password:', password.value)
+  loading.value = true
+  try {
+    await authStore.createUserWithEmailAndPassword(email.value, password.value)
+    // Handle successful sign-up logic here
+  } catch (error) {
+    // Handle error here
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
 }
 
 const passwordStrength = computed(() => {
