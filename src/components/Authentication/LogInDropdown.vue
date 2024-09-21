@@ -28,7 +28,7 @@
             </div>
           </div>
           <button type="submit" class="btn btn-outline-secondary w-100">Log-in</button>
-          <button class="btn btn-link" @click="redirectToSignUp">Don't have an account?</button>
+          <router-link class="btn btn-link" to="/signup">Don't have an account?</router-link>
         </form>
       </li>
       <li><hr class="dropdown-divider" /></li>
@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import Dropdown from '@/components/Dropdown/ButtonDropdown.vue'
 import { useAuthStore } from '@/stores/auth'
+import { RouterLink, RouterView } from 'vue-router'
 import { computed, onMounted, watch, ref } from 'vue'
 import { UserProfile, type User } from '@/types/user'
 import { jwtDecode } from 'jwt-decode'

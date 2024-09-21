@@ -8,6 +8,7 @@
       <UserProfileHeader v-if="isAuthenticated" />
     </template>
   </ViewHeader>
+  <RouterView />
 </template>
 
 <script setup lang="ts">
