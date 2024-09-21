@@ -5,12 +5,26 @@
       <form @submit.prevent="handleSignUp">
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="email" v-model="email" required />
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            v-model="email"
+            required
+            :disabled="loading"
+          />
           <div v-if="emailError" class="text-danger">{{ emailError }}</div>
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" v-model="password" required />
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            v-model="password"
+            required
+            :disabled="loading"
+          />
           <div v-if="passwordError" class="text-danger">{{ passwordError }}</div>
           <div v-if="password" class="password-strength-bar">
             <div
@@ -28,6 +42,7 @@
             id="confirmPassword"
             v-model="confirmPassword"
             required
+            :disabled="loading"
           />
           <div v-if="confirmPasswordError" class="text-danger">{{ confirmPasswordError }}</div>
           <div v-if="confirmPassword" class="password-match-bar">
