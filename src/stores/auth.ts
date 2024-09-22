@@ -38,6 +38,7 @@ export const useAuthStore = defineStore('auth', {
       const provider = new GoogleAuthProvider()
       signInWithPopup(auth, provider).then((result) => {
         this.user = result.user
+        router.push('/')
       })
     },
     async createUserWithEmailAndPassword(email: string, password: string) {

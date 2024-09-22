@@ -1,13 +1,18 @@
 <template>
   <div class="d-flex align-items-center">
-    <p class="mb-0 me-2">Welcome, {{ displayName }}</p>
-    <button class="btn btn-outline-secondary btn-sm" @click="signOutUser">Sign out</button>
+    <TextDropdown :items="dropdownItems" @select="handleSelect" class="me-2">
+      <template #selected>
+        <span class="mb-0 me-2">Welcome, {{ displayName }}</span>
+      </template>
+    </TextDropdown>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import TextDropdown from '@/components/Dropdown/TextDropdown.vue'
+import { DropdownItems } from '@/enums/UserProfileEnums'
 
 const authStore = useAuthStore()
 
@@ -23,4 +28,34 @@ const displayName = computed(() => {
 })
 
 const signOutUser = () => authStore.signOutUser()
+
+const dropdownItems = ref(Object.values(DropdownItems))
+
+const handleSelect = (item: string) => {
+  switch (item) {
+    case DropdownItems.Profile:
+      actionForItem1()
+      break
+    case DropdownItems.SignOut:
+      signOutUser()
+      break
+    default:
+      console.log('Unknown item selected:', item)
+  }
+}
+
+const actionForItem1 = () => {
+  console.log('Action for Item 1')
+  // Add your specific action for Item 1 here
+}
+
+const actionForItem2 = () => {
+  console.log('Action for Item 2')
+  // Add your specific action for Item 2 here
+}
+
+const actionForItem3 = () => {
+  console.log('Action for Item 3')
+  // Add your specific action for Item 3 here
+}
 </script>
