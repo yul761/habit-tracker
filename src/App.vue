@@ -1,13 +1,21 @@
 <template>
   <ViewHeader>
     <template #left>
-      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="50" height="50" />
+      <img
+        alt="Vue logo"
+        class="logo clickable"
+        src="@/assets/logo.svg"
+        width="50"
+        height="50"
+        @click="() => router.push('/')"
+      />
     </template>
     <template #right>
       <LogInDropdown v-if="!isAuthenticated" />
       <UserProfileHeader v-if="isAuthenticated" />
     </template>
   </ViewHeader>
+  <BreadCrumb />
   <RouterView />
 </template>
 
@@ -18,12 +26,18 @@ import { useAuthStore } from '@/stores/auth'
 import { computed } from 'vue'
 import UserProfileHeader from '@/components/UserProfile/UserProfileHeader.vue'
 import ViewHeader from '@/components/Header/ViewHeader.vue'
+import BreadCrumb from '@/components/BreadCrumb/BreadCrumb.vue'
+import router from '@/router'
 
 const authStore = useAuthStore()
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 </script>
 
 <style scoped>
+.clickable {
+  cursor: pointer;
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;

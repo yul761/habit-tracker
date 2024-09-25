@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/auth'
 import { computed, ref } from 'vue'
 import TextDropdown from '@/components/Dropdown/TextDropdown.vue'
 import { DropdownItems } from '@/enums/UserProfileEnums'
+import router from '@/router'
 
 const authStore = useAuthStore()
 
@@ -32,9 +33,10 @@ const signOutUser = () => authStore.signOutUser()
 const dropdownItems = ref(Object.values(DropdownItems))
 
 const handleSelect = (item: string) => {
+  console.log('Item selected:', item)
   switch (item) {
     case DropdownItems.Profile:
-      actionForItem1()
+      router.push('/profile')
       break
     case DropdownItems.SignOut:
       signOutUser()
