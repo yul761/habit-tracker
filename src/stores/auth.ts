@@ -7,6 +7,8 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  setPersistence,
+  browserSessionPersistence,
   type User
 } from 'firebase/auth'
 import router from '@/router'
@@ -36,9 +38,11 @@ export const useAuthStore = defineStore('auth', {
     },
     googleSignIn() {
       const provider = new GoogleAuthProvider()
-      signInWithPopup(auth, provider).then((result) => {
-        this.user = result.user
-        router.push('/')
+      setPersistence(auth, browserSessionPersistence).then(() => {
+        signInWithPopup(auth, provider).then((result) => {
+          this.user = result.user
+          router.push('/')
+        })
       })
     },
     async createUserWithEmailAndPassword(email: string, password: string) {
@@ -52,6 +56,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async signInWithEmailAndPassword(email: string, password: string) {
       try {
+        await setPersistence(auth, browserSessionPersistence)
         const userCredential = await signInWithEmailAndPassword(auth, email, password)
         this.user = userCredential.user
       } catch (error) {
@@ -59,9 +64,14 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     initializeAuth() {
-      onAuthStateChanged(auth, () => {
-        this.user = null
-        this.loading = false
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          this.user = user
+          console.log('User is signed in:', user)
+        } else {
+          this.user = null
+          console.log('No user is signed in')
+        }
       })
     }
   }
