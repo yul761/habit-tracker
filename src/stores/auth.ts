@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { auth } from '@/firebase/firebase.auth'
+import { auth } from '@/firebase/firebase.base'
 import {
   onAuthStateChanged,
   signOut,
@@ -12,6 +12,7 @@ import {
   type User
 } from 'firebase/auth'
 import router from '@/router'
+import { userExists, addUser } from '@/firebase/firebase.db'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -39,8 +40,18 @@ export const useAuthStore = defineStore('auth', {
     googleSignIn() {
       const provider = new GoogleAuthProvider()
       setPersistence(auth, browserSessionPersistence).then(() => {
-        signInWithPopup(auth, provider).then((result) => {
+        signInWithPopup(auth, provider).then(async (result) => {
           this.user = result.user
+          const ifUserExists = await userExists(this.user.uid)
+          if (!ifUserExists) {
+            addUser(this.user.uid, {
+              displayName: this.user.displayName,
+              email: this.user.email,
+              notifyThroughEmail: false,
+              phoneNumber: '',
+              notifyThroughSms: false
+            })
+          }
           router.push('/')
         })
       })
@@ -49,6 +60,13 @@ export const useAuthStore = defineStore('auth', {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         this.user = userCredential.user
+        await addUser(this.user.uid, {
+          displayName: this.user.displayName,
+          email: this.user.email,
+          notifyThroughEmail: false,
+          phoneNumber: '',
+          notifyThroughSms: false
+        })
         router.push('/')
       } catch (error) {
         console.error('Error during sign-up:', error)
@@ -59,6 +77,16 @@ export const useAuthStore = defineStore('auth', {
         await setPersistence(auth, browserSessionPersistence)
         const userCredential = await signInWithEmailAndPassword(auth, email, password)
         this.user = userCredential.user
+        const ifUserExists = await userExists(this.user.uid)
+        if (!ifUserExists) {
+          addUser(this.user.uid, {
+            displayName: this.user.displayName,
+            email: this.user.email,
+            notifyThroughEmail: false,
+            phoneNumber: '',
+            notifyThroughSms: false
+          })
+        }
       } catch (error) {
         console.error('Error during sign-in:', error)
       }

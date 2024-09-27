@@ -37,14 +37,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-
+import { ref, onMounted } from 'vue'
+import { getUsers, getUserById } from '@/firebase/firebase.db'
 const displayName = ref('')
 const email = ref('')
 const phoneNumber = ref('')
 const emailUpdates = ref(false)
 const smsUpdates = ref(false)
-
+onMounted(() => {
+  getUsers()
+  getUserById('L7MlJvcqSYvZVxcVPUGm')
+})
 const updateProfile = () => {
   // Handle profile update logic here
   console.log('Profile updated:', {

@@ -33,7 +33,6 @@ const signOutUser = () => authStore.signOutUser()
 const dropdownItems = ref(Object.values(DropdownItems))
 
 const handleSelect = (item: string) => {
-  console.log('Item selected:', item)
   switch (item) {
     case DropdownItems.Profile:
       router.push('/profile')

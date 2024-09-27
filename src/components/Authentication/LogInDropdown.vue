@@ -59,24 +59,14 @@
 <script setup lang="ts">
 import Dropdown from '@/components/Dropdown/ButtonDropdown.vue'
 import { useAuthStore } from '@/stores/auth'
-import { RouterLink, RouterView } from 'vue-router'
-import { computed, onMounted, watch, ref } from 'vue'
-import { UserProfile, type User } from '@/types/user'
-import { jwtDecode } from 'jwt-decode'
-import googleOneTap from 'google-one-tap'
+import { RouterLink } from 'vue-router'
+import { computed, ref } from 'vue'
 
 const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
 const errorMessage = ref('')
-const isAuthenticated = computed(() => authStore.isAuthenticated)
-const googleIsAuthenticated = computed(() => authStore.googleIsAuthenticated)
-
-watch(isAuthenticated, (isAuthenticated) => {
-  console.log('isAuthenticated', isAuthenticated)
-  console.log(authStore.user)
-})
 
 const handleLogin = async () => {
   isLoading.value = true

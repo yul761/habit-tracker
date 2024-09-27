@@ -29,8 +29,6 @@ const breadcrumbs = computed(() => {
     label: routeRecord.name
   }))
 })
-console.log(breadcrumbs)
-console.log(route)
 </script>
 
 <style scoped>
