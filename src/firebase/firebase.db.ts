@@ -1,5 +1,5 @@
 import { db } from '@/firebase/firebase.base'
-import { collection, addDoc, getDocs, getDoc, doc, setDoc } from 'firebase/firestore'
+import { collection, getDocs, getDoc, doc, setDoc, updateDoc } from 'firebase/firestore'
 import { type User } from '@/types/user'
 
 export async function addUser(userId: string, user: User) {
@@ -48,12 +48,19 @@ export async function getUserById(userId: string) {
 export async function userExists(userId: string): Promise<boolean> {
   try {
     const userDoc = await getDoc(doc(db, 'user', userId))
-    console.log(userDoc)
-    console.log(userId)
-    console.log(userDoc.exists())
     return userDoc.exists()
   } catch (e) {
     console.error('Error checking if user exists: ', e)
     return false
+  }
+}
+
+export async function updateUser(userId: string, user: Partial<User>) {
+  try {
+    const userRef = doc(db, 'user', userId)
+    await updateDoc(userRef, user)
+    console.log('Document updated with ID: ', userId)
+  } catch (e) {
+    console.error('Error updating document: ', e)
   }
 }

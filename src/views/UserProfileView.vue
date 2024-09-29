@@ -30,25 +30,98 @@
             <label for="smsUpdates" class="form-check-label">Receive updates through SMS?</label>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+        <button
+          type="submit"
+          class="btn btn-primary w-100 d-flex justify-content-center align-items-center"
+          :disabled="!isFormModified"
+        >
+          <span class="updateProfile">Update Profile</span>
+          <span class="indicator-container ms-2">
+            <span
+              v-if="loading"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            <span v-if="success" class="fw-bold">&#10003;</span>
+          </span>
+        </button>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { getUsers, getUserById } from '@/firebase/firebase.db'
+import { ref, onMounted, computed, reactive } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { getUserById, updateUser } from '@/firebase/firebase.db'
+
+const authStore = useAuthStore()
+const loading = ref(false)
+const success = ref(false)
+
 const displayName = ref('')
 const email = ref('')
 const phoneNumber = ref('')
 const emailUpdates = ref(false)
 const smsUpdates = ref(false)
-onMounted(() => {
-  getUsers()
-  getUserById('L7MlJvcqSYvZVxcVPUGm')
+
+const initialData = reactive({
+  displayName: '',
+  email: '',
+  phoneNumber: '',
+  emailUpdates: false,
+  smsUpdates: false
 })
+
+const loadUserData = async () => {
+  console.log('Loading user data...', authStore.user)
+  if (authStore.user) {
+    console.log('User ID:', authStore.user.uid)
+    const user = await getUserById(authStore.user.uid)
+    if (user) {
+      displayName.value = user.displayName ?? ''
+      email.value = user.email ?? ''
+      phoneNumber.value = user.phoneNumber
+      emailUpdates.value = user.notifyThroughEmail
+      smsUpdates.value = user.notifyThroughSms
+
+      // Store initial values
+      initialData.displayName = displayName.value
+      initialData.email = email.value
+      initialData.phoneNumber = phoneNumber.value
+      initialData.emailUpdates = emailUpdates.value
+      initialData.smsUpdates = smsUpdates.value
+    }
+  }
+}
+
+const checkUserData = () => {
+  if (authStore.user) {
+    loadUserData()
+  } else {
+    setTimeout(checkUserData, 1000) // Check every second until user data is available
+  }
+}
+
+onMounted(() => {
+  console.log('User Profile View mounted')
+  checkUserData()
+})
+
+const isFormModified = computed(() => {
+  return (
+    displayName.value !== initialData.displayName ||
+    email.value !== initialData.email ||
+    phoneNumber.value !== initialData.phoneNumber ||
+    emailUpdates.value !== initialData.emailUpdates ||
+    smsUpdates.value !== initialData.smsUpdates
+  )
+})
+
 const updateProfile = () => {
+  loading.value = true
+  success.value = false
   // Handle profile update logic here
   console.log('Profile updated:', {
     displayName: displayName.value,
@@ -57,6 +130,34 @@ const updateProfile = () => {
     emailUpdates: emailUpdates.value,
     smsUpdates: smsUpdates.value
   })
+
+  // Update the user profile in the database
+  if (authStore.user) {
+    updateUser(authStore.user.uid, {
+      displayName: displayName.value,
+      email: email.value,
+      phoneNumber: phoneNumber.value,
+      notifyThroughEmail: emailUpdates.value,
+      notifyThroughSms: smsUpdates.value
+    })
+      .then(() => {
+        console.log('User profile updated successfully')
+        initialData.displayName = displayName.value
+        initialData.email = email.value
+        initialData.phoneNumber = phoneNumber.value
+        initialData.emailUpdates = emailUpdates.value
+        initialData.smsUpdates = smsUpdates.value
+        success.value = true
+        setTimeout(() => {
+          success.value = false
+        }, 1000)
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  } else {
+    loading.value = false
+  }
 }
 </script>
 
@@ -124,5 +225,22 @@ const updateProfile = () => {
 
 .form-check-label {
   display: inline-block;
+}
+
+.indicator-container {
+  display: inline-block;
+  width: 1.5rem; /* Adjust width as needed */
+  height: 1.5rem; /* Adjust height as needed */
+  vertical-align: middle;
+}
+
+.spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.2em;
+}
+
+.updateProfile {
+  margin-left: 1.5rem;
 }
 </style>
