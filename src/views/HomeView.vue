@@ -1,9 +1,6 @@
 <template>
-  <main class="container mt-4 custom-container" v-if="isRootPath">
-    <template>
-      <span>Home View</span>
-      <button @click="() => router.push('/home/test')">go to next</button>
-    </template>
+  <main class="mt-4 w-100" v-if="isRootPath">
+    <habit-table />
   </main>
   <router-view v-else />
 </template>
@@ -12,6 +9,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
+import HabitTable from '@/components/Datatable/HabitTable.vue'
 
 const route = useRoute()
 
