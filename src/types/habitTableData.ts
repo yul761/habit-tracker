@@ -1,14 +1,14 @@
 export enum Frequency {
-  Daily = 'daily',
-  Weekly = 'weekly',
-  Monthly = 'monthly'
+  Daily = 'day',
+  Weekly = 'week',
+  Monthly = 'month'
 }
 
 export enum Unit {
-  Pages = 'pages',
-  Minutes = 'minutes',
-  Hours = 'hours',
-  Reps = 'reps',
+  Pages = 'page(s)',
+  Minutes = 'minute(s)',
+  Hours = 'hour(s)',
+  Reps = 'rep(s)',
   Km = 'km',
   Miles = 'miles'
 }

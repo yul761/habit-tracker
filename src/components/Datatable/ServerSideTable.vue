@@ -4,6 +4,7 @@
     :headers="headers"
     :items="serverItems"
     :items-length="totalItems"
+    :items-per-page-options="[5, 10, 15]"
     :loading="loading"
     item-value="task"
     @update:options="loadItems"
