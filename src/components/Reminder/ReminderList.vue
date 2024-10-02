@@ -1,6 +1,6 @@
 <template>
   <div class="reminder-list">
-    <h2>Today's Reminders</h2>
+    <h2>{{ currentDate }}</h2>
     <v-list lines="two">
       <v-list-item v-for="task in todayTasks" :key="task.id">
         <v-list-item-title>{{ task.task }}</v-list-item-title>
@@ -11,23 +11,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Frequency } from '@/types/habitTableData'
 import { habits } from '@/dummyData'
+import { formatDate } from '@/utils/DateHandler'
+import { IsDueToday } from '@/components/Reminder/ReminderHandler'
 
 const today = new Date().getDay()
+const currentDate = ref(formatDate(new Date()))
 
 const todayTasks = computed(() => {
-  return habits.filter((task) => {
-    if (task.frequency === Frequency.Daily) {
-      return true
-    }
-    if (task.frequency === Frequency.Weekly && today === 1) {
-      // Assuming weekly tasks are done on Mondays
-      return true
-    }
-    return false
-  })
+  return habits.filter((task) => IsDueToday(task))
 })
 </script>
 
