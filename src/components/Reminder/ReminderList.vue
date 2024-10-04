@@ -12,12 +12,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Frequency } from '@/types/habitTableData'
 import { habits } from '@/dummyData'
 import { formatDate } from '@/utils/DateHandler'
 import { IsDueToday } from '@/components/Reminder/ReminderHandler'
 
-const today = new Date().getDay()
 const currentDate = ref(formatDate(new Date()))
 
 const todayTasks = computed(() => {
