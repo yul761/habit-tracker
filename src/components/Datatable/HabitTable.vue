@@ -1,10 +1,15 @@
+<!-- eslint-disable vue/valid-v-slot -->
 <template>
   <ServerSideTable
     :fetch-items="fetchItems"
     :headers="headers"
-    item-value="name"
+    item-value="id"
     @update:items="handleItemsUpdate"
-  />
+  >
+    <template #item.name="{ item }">
+      <a @click="onOpen(item.task)" href="javascript:void(0)">{{ item.task }}</a>
+    </template>
+  </ServerSideTable>
 </template>
 
 <script setup lang="ts">
@@ -15,7 +20,7 @@ import type { Header, FetchItemsParams, FetchItemsResult } from './interfaces/se
 import { habits } from '@/dummyData'
 
 const headers = ref<Header[]>([
-  { title: 'Task', align: 'start', sortable: false, key: 'task' },
+  { title: 'Task', align: 'start', sortable: false, key: 'name' },
   { title: 'Target', key: 'target', align: 'end' },
   { title: 'Habit Streak', key: 'daysKept', align: 'end' }
 ])
@@ -60,5 +65,9 @@ const fetchItems = async ({
 
 const handleItemsUpdate = (items: HabitTableData[]): void => {
   console.log('Items updated:', items)
+}
+
+const onOpen = (name: string) => {
+  console.log('Open habit', name)
 }
 </script>

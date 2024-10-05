@@ -1,3 +1,5 @@
+import type { TableData } from '@/types/tableData'
+
 export enum Frequency {
   Daily = 'day',
   Weekly = 'week',
@@ -13,8 +15,7 @@ export enum Unit {
   Miles = 'miles'
 }
 
-export type HabitTableData = {
-  id: string
+export interface HabitTableData extends TableData {
   task: string
   targetValue: number // e.g., 5
   targetUnit: Unit // e.g., "pages", "minutes"
