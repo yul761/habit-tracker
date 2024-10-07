@@ -13,6 +13,11 @@ const router = createRouter({
           path: 'profile',
           name: 'Profile',
           component: () => import('@/views/UserProfileView.vue')
+        },
+        {
+          path: 'habit/:habitId',
+          name: 'HabitDetail',
+          component: () => import('@/views/HabitInfoDetailView.vue')
         }
       ]
     },

@@ -7,7 +7,7 @@
     @update:items="handleItemsUpdate"
   >
     <template #item.name="{ item }">
-      <a @click="onOpen(item.task)" href="javascript:void(0)">{{ item.task }}</a>
+      <a @click="onOpen(item.id)" href="javascript:void(0)">{{ item.task }}</a>
     </template>
   </ServerSideTable>
 </template>
@@ -18,6 +18,7 @@ import ServerSideTable from './ServerSideTable.vue'
 import { type HabitTableData } from '@/types/habitTableData'
 import type { Header, FetchItemsParams, FetchItemsResult } from './interfaces/serverSideTable'
 import { habits } from '@/dummyData'
+import router from '@/router'
 
 const headers = ref<Header[]>([
   { title: 'Task', align: 'start', sortable: false, key: 'name' },
@@ -67,7 +68,8 @@ const handleItemsUpdate = (items: HabitTableData[]): void => {
   console.log('Items updated:', items)
 }
 
-const onOpen = (name: string) => {
-  console.log('Open habit', name)
+const onOpen = (id: string) => {
+  console.log('Open habit', id)
+  router.push({ name: 'HabitDetail', params: { habitId: id } })
 }
 </script>
