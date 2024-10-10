@@ -2,6 +2,7 @@ export interface FetchItemsParams {
   page: number
   itemsPerPage: number
   sortBy: { key: string; order: 'asc' | 'desc' }[]
+  userId: string
 }
 export interface FetchItemsResult<T> {
   items: T[]

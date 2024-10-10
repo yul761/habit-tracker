@@ -15,7 +15,7 @@ const router = createRouter({
           component: () => import('@/views/UserProfileView.vue')
         },
         {
-          path: 'habit/:habitId',
+          path: 'user/:userId/habit/:habitId',
           name: 'HabitDetail',
           component: () => import('@/components/HabitForm/HabitInfoDetailView.vue')
         },

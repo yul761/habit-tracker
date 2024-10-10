@@ -31,6 +31,11 @@ import { ref, type Ref } from 'vue'
 import { defineEmits } from 'vue'
 import type { Header, FetchItemsParams, FetchItemsResult } from './interfaces/serverSideTable'
 import type { TableData } from '@/types/tableData'
+import { useAuthStore } from '@/stores/auth'
+import { auth } from '@/firebase/firebase.base'
+import { defaultHabitData } from '@/firebase/firebase.habit.db'
+import { onAuthStateChanged } from 'firebase/auth'
+import _ from 'lodash'
 
 // Define props with types
 const props = defineProps<{
@@ -44,18 +49,24 @@ const emits = defineEmits<{
   (e: 'new'): void
 }>()
 
+const authStore = useAuthStore()
 const itemsPerPage = ref(5)
 const serverItems: Ref<T[]> = ref([])
 const loading = ref(true)
 const totalItems = ref(0)
 
-function loadItems({ page, itemsPerPage, sortBy }: FetchItemsParams) {
-  loading.value = true
+function loadItems({ page, itemsPerPage, sortBy, userId }: FetchItemsParams) {
+  if (!authStore.user) {
+    console.log('User is not signed in, skipping loadItems.')
+    return
+  }
+
   props
     .fetchItems<T>({
       page,
       itemsPerPage,
-      sortBy
+      sortBy,
+      userId
     })
     .then(({ items, total }: FetchItemsResult<T>) => {
       serverItems.value = items
@@ -64,4 +75,14 @@ function loadItems({ page, itemsPerPage, sortBy }: FetchItemsParams) {
       emits('update:items', items)
     })
 }
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log('User is signed in:', user)
+    authStore.user = user
+    loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: [], userId: user.uid })
+  } else {
+    console.log('No user is signed in')
+  }
+})
 </script>

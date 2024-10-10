@@ -85,7 +85,7 @@ export async function getUserHabits(userId: string) {
     const habits: HabitTableData[] = []
     querySnapshot.forEach((doc) => {
       const habitData = doc.data() as HabitTableData
-      habits.push({ ...habitData })
+      habits.push({ ...habitData, id: doc.id })
     })
 
     return habits
@@ -190,6 +190,26 @@ export async function createHabit(userId: string, habitData: HabitTableData) {
     return habitDocRef.id
   } catch (error) {
     console.error('Error creating habit or updating user profile:', error)
+    return null
+  }
+}
+
+export async function updateHabit(
+  userId: string,
+  habitId: string,
+  habitData: Partial<HabitTableData>
+) {
+  try {
+    // Get a reference to the specific habit document
+    const habitDocRef = doc(db, 'user', userId, 'habits', habitId)
+
+    // Update the habit document with the new habitData
+    await updateDoc(habitDocRef, habitData)
+
+    console.log('Habit updated successfully with ID:', habitId)
+    return habitId
+  } catch (error) {
+    console.error('Error updating habit:', error)
     return null
   }
 }
