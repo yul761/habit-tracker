@@ -1,4 +1,5 @@
 import type { TableData } from '@/types/tableData'
+import type { DocumentReference, Timestamp } from 'firebase/firestore'
 
 export enum Frequency {
   Daily = 'day',
@@ -25,4 +26,27 @@ export interface HabitTableData extends TableData {
   reminderTime?: string // Optional reminder time in HH:mm format
   notes?: string // Optional notes about the habit
   daysKept: number // Number of days the habit has been kept
+
+  isActive: boolean // Whether the habit is currently active
+  lastNotification: number // Timestamp of the last notification (as a Unix timestamp)
+  longestStreak: number // Longest streak of days keeping the habit
+  streak: number // Current streak of the habit
+  totalCompletions: number // Total number of habit completions
+  createdAt: Timestamp // Timestamp of when the habit was created (Firebase Timestamp)
+  updatedAt: Timestamp // Timestamp of the last update (Firebase Timestamp)
+  userId: string // ID of the user who created the habit
+  notificationPreferences: DocumentReference // Reference to user's notification preferences
+  processLog: DocumentReference // Reference to the log for processing
+}
+
+export interface NotificationPreference extends TableData {
+  emailEnabled: boolean
+  pushEnabled: boolean
+  smsEnabled: boolean
+}
+
+export interface ProcessLog extends TableData {
+  Date: Date
+  Value: number
+  notes: string
 }

@@ -1,3 +1,3 @@
 export interface TableData {
-  id: string
+  id?: string
 }

@@ -12,7 +12,7 @@ import {
   type User
 } from 'firebase/auth'
 import router from '@/router'
-import { userExists, addUser } from '@/firebase/firebase.db'
+import { userExists, addUser } from '@/firebase/firebase.user.db'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
