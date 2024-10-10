@@ -5,6 +5,7 @@
     :headers="headers"
     item-value="id"
     @update:items="handleItemsUpdate"
+    @new="Create"
   >
     <template #item.name="{ item }">
       <a @click="onOpen(item.id)" href="javascript:void(0)">{{ item.task }}</a>
@@ -71,5 +72,10 @@ const handleItemsUpdate = (items: HabitTableData[]): void => {
 const onOpen = (id: string) => {
   console.log('Open habit', id)
   router.push({ name: 'HabitDetail', params: { habitId: id } })
+}
+
+const Create = () => {
+  console.log('Create new habit')
+  router.push({ name: 'NewHabit' })
 }
 </script>

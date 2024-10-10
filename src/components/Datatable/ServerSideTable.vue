@@ -12,7 +12,9 @@
   >
     <template v-slot:top>
       <v-toolbar flat>
-        <v-btn class="mb-2" color="primary" dark v-bind="props"> New Item </v-btn>
+        <v-btn class="mb-2" color="primary" dark @click="$emit('new')" v-bind="props">
+          New Item
+        </v-btn>
       </v-toolbar>
     </template>
     <template v-slot:loading>
@@ -39,6 +41,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   <T>(e: 'update:items', items: T[]): void
+  (e: 'new'): void
 }>()
 
 const itemsPerPage = ref(5)

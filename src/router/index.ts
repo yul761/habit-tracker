@@ -17,7 +17,12 @@ const router = createRouter({
         {
           path: 'habit/:habitId',
           name: 'HabitDetail',
-          component: () => import('@/views/HabitInfoDetailView.vue')
+          component: () => import('@/components/HabitForm/HabitInfoDetailView.vue')
+        },
+        {
+          path: 'habit/new',
+          name: 'NewHabit',
+          component: () => import('@/components/HabitForm/NewHabitView.vue')
         }
       ]
     },
