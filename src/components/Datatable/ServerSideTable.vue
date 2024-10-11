@@ -33,7 +33,7 @@ import type { Header, FetchItemsParams, FetchItemsResult } from './interfaces/se
 import type { TableData } from '@/types/tableData'
 import { useAuthStore } from '@/stores/auth'
 import { auth } from '@/firebase/firebase.base'
-import { defaultHabitData } from '@/firebase/firebase.habit.db'
+import { defaultHabitData } from '@/firebase/habit.template'
 import { onAuthStateChanged } from 'firebase/auth'
 import _ from 'lodash'
 

@@ -17,14 +17,15 @@ import { Unit, Frequency, type HabitTableData } from '@/types/habitTableData'
 import _ from 'lodash'
 import { onBeforeRouteLeave } from 'vue-router'
 import HabitForm from '@/components/HabitForm/HabitForm.vue'
-import { defaultHabitData, createHabit, emptyHabitData } from '@/firebase/firebase.habit.db'
+import { defaultHabitData, emptyHabitData } from '@/firebase/habit.template'
 import { useAuthStore } from '@/stores/auth'
 import { auth } from '@/firebase/firebase.base'
 import { onAuthStateChanged } from 'firebase/auth'
+import { createHabit } from '@/firebase/firebase.habit.db'
 
 const authStore = useAuthStore()
 const habit = reactive<HabitTableData>(emptyHabitData())
-let initialHabit = {}
+let initialHabit = emptyHabitData()
 
 const units = Object.values(Unit)
 const frequencies = Object.values(Frequency)

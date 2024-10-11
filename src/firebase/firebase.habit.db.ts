@@ -1,7 +1,5 @@
 import { db } from '@/firebase/firebase.base'
 import {
-  Frequency,
-  Unit,
   type HabitTableData,
   type NotificationPreference,
   type ProcessLog
@@ -9,72 +7,15 @@ import {
 import {
   getDoc,
   updateDoc,
-  deleteDoc,
   query,
   where,
   getDocs,
   collection,
   doc,
-  Timestamp,
   addDoc,
   arrayUnion
 } from 'firebase/firestore'
-
-export const emptyHabitData = (): Omit<HabitTableData, 'id'> => ({
-  task: '',
-  targetValue: 0,
-  targetUnit: Unit.Pages, // Default to "page(s)"
-  frequency: Frequency.Daily, // Default to "day"
-  startDate: Timestamp.now().toMillis(), // Current time in milliseconds
-  daysKept: 0,
-  isActive: true, // Default to active habit
-  lastNotification: 0, // Default no notifications sent
-  longestStreak: 0,
-  totalCompletions: 0,
-  createdAt: Timestamp.now(), // Set current timestamp
-  updatedAt: Timestamp.now(),
-  userId: '',
-  notificationPreferences: {} as any, // Default value, assuming this is populated later
-  processLog: {} as any, // Default value, assuming this is populated later
-  streak: 0, // Default streak
-  notes: '',
-  reminderTime: '',
-  endDate: 0
-})
-
-export const defaultHabitData = (userId: string): Omit<HabitTableData, 'id'> => ({
-  task: '',
-  targetValue: 0,
-  targetUnit: Unit.Pages, // Default to "page(s)"
-  frequency: Frequency.Daily, // Default to "day"
-  startDate: Timestamp.now().toMillis(), // Current time in milliseconds
-  daysKept: 0,
-  isActive: true, // Default to active habit
-  lastNotification: 0, // Default no notifications sent
-  longestStreak: 0,
-  totalCompletions: 0,
-  createdAt: Timestamp.now(), // Set current timestamp
-  updatedAt: Timestamp.now(),
-  userId,
-  notificationPreferences: {} as any, // Default value, assuming this is populated later
-  processLog: {} as any, // Default value, assuming this is populated later
-  streak: 0, // Default streak
-  notes: '',
-  reminderTime: '',
-  endDate: 0
-})
-
-const defaultNotificationPreference = (): NotificationPreference => ({
-  emailEnabled: false,
-  pushEnabled: false,
-  smsEnabled: false
-})
-
-const defaultProcessLog = (): ProcessLog => ({
-  Date: new Date(),
-  Value: 0,
-  notes: ''
-})
+import { defaultProcessLog, defaultNotificationPreference } from '@/firebase/habit.template'
 
 export async function getUserHabits(userId: string) {
   try {

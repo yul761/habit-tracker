@@ -18,12 +18,12 @@ import { Unit, Frequency, type HabitTableData } from '@/types/habitTableData'
 import _ from 'lodash'
 import { onBeforeRouteLeave } from 'vue-router'
 import HabitForm from '@/components/HabitForm/HabitForm.vue'
-import { emptyHabitData } from '@/firebase/firebase.habit.db'
+import { emptyHabitData } from '@/firebase/habit.template'
 import { useRoute } from 'vue-router'
 import { getHabit } from '@/firebase/firebase.habit.db'
 
 const habit = reactive<HabitTableData>(emptyHabitData())
-let initialHabit = {}
+let initialHabit: HabitTableData = emptyHabitData()
 const loading = ref(true)
 
 const units = Object.values(Unit)
@@ -31,7 +31,11 @@ const frequencies = Object.values(Frequency)
 
 const router = useRoute()
 const isModified = computed(() => {
-  return !_.isEqual(habit, initialHabit)
+  const fieldsToIgnore = ['notificationPreferences', 'processLog'] // Replace with actual field names
+  const habitToCompare = _.omit(habit, fieldsToIgnore)
+  const initialHabitToCompare = _.omit(initialHabit, fieldsToIgnore)
+  console.log('recalculate', habitToCompare, initialHabitToCompare)
+  return !_.isEqual(habitToCompare, initialHabitToCompare)
 })
 
 const saveHabit = async () => {
@@ -58,6 +62,8 @@ onMounted(() => {
   if (habitId && userId) {
     getHabit(userId, habitId)
       .then((habitData) => {
+        console.log({ habitData })
+        //initialHabit = LoadedInitialHabitData(habitData)
         Object.assign(habit, habitData)
         Object.assign(initialHabit, habitData)
       })
