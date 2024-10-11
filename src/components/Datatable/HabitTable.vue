@@ -33,6 +33,9 @@ const fetchItems = async ({
   sortBy,
   userId
 }: FetchItemsParams): Promise<FetchItemsResult<HabitTableData>> => {
+  if (!userId) {
+    return { items: [], total: 0 }
+  }
   const habits = await getUserHabits(userId)
 
   if (habits.length === 0) {

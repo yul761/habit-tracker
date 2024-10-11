@@ -77,10 +77,11 @@ function loadItems({ page, itemsPerPage, sortBy, userId }: FetchItemsParams) {
 }
 
 onAuthStateChanged(auth, (user) => {
+  loading.value = true
   if (user) {
     console.log('User is signed in:', user)
     authStore.user = user
-    loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: [], userId: user.uid })
+    loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: [], userId: authStore.user.uid })
   } else {
     console.log('No user is signed in')
   }
