@@ -5,14 +5,19 @@
   <div v-else class="form-container">
     <habit-form :habit="habit" :units="units" :frequencies="frequencies" @submit="NewHabit">
       <template #submit-button>
-        <v-btn :disabled="!isModified" type="submit" color="primary">Create Habit</v-btn>
+        <v-btn :disabled="!isModified || isCreating" type="submit" color="primary"
+          ><template v-if="isCreating">
+            <v-progress-circular indeterminate size="20" color="white"></v-progress-circular>
+          </template>
+          <template v-else> Create Habit </template>
+        </v-btn>
       </template>
     </habit-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { Unit, Frequency, type HabitTableData } from '@/types/habitTableData'
 import _ from 'lodash'
 import { onBeforeRouteLeave } from 'vue-router'
@@ -22,15 +27,28 @@ import { useAuthStore } from '@/stores/auth'
 import { auth } from '@/firebase/firebase.base'
 import { onAuthStateChanged } from 'firebase/auth'
 import { createHabit } from '@/firebase/firebase.habit.db'
+import router from '@/router'
 
 const authStore = useAuthStore()
 const habit = reactive<HabitTableData>(emptyHabitData())
-let initialHabit = emptyHabitData()
+const initialHabit = reactive<HabitTableData>(emptyHabitData())
 
 const units = Object.values(Unit)
 const frequencies = Object.values(Frequency)
 
+const findDifferences = (obj1, obj2) => {
+  const differences = {}
+  for (const key in obj1) {
+    if (!_.isEqual(obj1[key], obj2[key])) {
+      differences[key] = { obj1: obj1[key], obj2: obj2[key] }
+    }
+  }
+  return differences
+}
+
 const isModified = computed(() => {
+  const differences = findDifferences(habit, initialHabit)
+  console.log('Differences:', differences)
   return !_.isEqual(habit, initialHabit)
 })
 
@@ -38,12 +56,24 @@ const isLoading = computed(() => {
   return _.isEmpty(habit)
 })
 
+const isCreating = ref(false)
+
 const NewHabit = async () => {
   console.log({ habit })
+  let habitId = null
   if (!authStore.user) {
     return
   }
-  createHabit(authStore.user.uid, habit)
+  isCreating.value = true
+  try {
+    habitId = await createHabit(authStore.user.uid, habit)
+    Object.assign(initialHabit, habit)
+  } finally {
+    isCreating.value = false // Set loading state to false after the function completes
+    if (habitId) {
+      router.replace({ name: 'HabitDetail', params: { habitId, userId: authStore.user.uid } })
+    }
+  }
 }
 
 onBeforeRouteLeave((to, from, next) => {
@@ -64,7 +94,7 @@ onAuthStateChanged(auth, (user) => {
     console.log('User is signed in:', user)
     authStore.user = user
     Object.assign(habit, defaultHabitData(authStore.user.uid))
-    initialHabit = _.cloneDeep(habit)
+    Object.assign(initialHabit, habit)
   } else {
     console.log('No user is signed in')
   }

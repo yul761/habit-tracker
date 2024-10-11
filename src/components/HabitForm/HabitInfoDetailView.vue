@@ -5,7 +5,12 @@
   <div v-else class="form-container">
     <habit-form :habit="habit" :units="units" :frequencies="frequencies" @submit="saveHabit">
       <template #submit-button>
-        <v-btn :disabled="!isModified" type="submit" color="primary">Save Habit</v-btn>
+        <v-btn :disabled="!isModified || isUpdating" type="submit" color="primary"
+          ><template v-if="isUpdating">
+            <v-progress-circular indeterminate size="20" color="white"></v-progress-circular>
+          </template>
+          <template v-else> Save Habit </template>
+        </v-btn>
       </template>
     </habit-form>
   </div>
@@ -20,11 +25,12 @@ import { onBeforeRouteLeave } from 'vue-router'
 import HabitForm from '@/components/HabitForm/HabitForm.vue'
 import { emptyHabitData } from '@/firebase/habit.template'
 import { useRoute } from 'vue-router'
-import { getHabit } from '@/firebase/firebase.habit.db'
+import { getHabit, updateHabit } from '@/firebase/firebase.habit.db'
 
 const habit = reactive<HabitTableData>(emptyHabitData())
-let initialHabit: HabitTableData = emptyHabitData()
+const initialHabit = reactive<HabitTableData>(emptyHabitData())
 const loading = ref(true)
+const isUpdating = ref(false)
 
 const units = Object.values(Unit)
 const frequencies = Object.values(Frequency)
@@ -39,7 +45,17 @@ const isModified = computed(() => {
 })
 
 const saveHabit = async () => {
-  console.log({ habit })
+  const habitId = router.params.habitId as string
+  const userId = router.params.userId as string
+  if (habitId && userId) {
+    isUpdating.value = true
+    try {
+      await updateHabit(userId, habitId, habit)
+      Object.assign(initialHabit, habit)
+    } finally {
+      isUpdating.value = false // Set updating state to false after the function completes
+    }
+  }
 }
 
 onBeforeRouteLeave((to, from, next) => {
