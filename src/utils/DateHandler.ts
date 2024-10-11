@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore'
+
 // Function to format the current date
 export const formatDate = (date: Date): string => {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -32,4 +34,11 @@ export const formatDate = (date: Date): string => {
     }
   }
   return `${dayName} - ${monthName} ${day}${suffix(day)}`
+}
+
+export const midnightTimestamp = () => {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+
+  return Timestamp.fromDate(now)
 }

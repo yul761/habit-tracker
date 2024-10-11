@@ -34,7 +34,7 @@ const isModified = computed(() => {
   const fieldsToIgnore = ['notificationPreferences', 'processLog'] // Replace with actual field names
   const habitToCompare = _.omit(habit, fieldsToIgnore)
   const initialHabitToCompare = _.omit(initialHabit, fieldsToIgnore)
-  console.log('recalculate', habitToCompare, initialHabitToCompare)
+
   return !_.isEqual(habitToCompare, initialHabitToCompare)
 })
 

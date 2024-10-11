@@ -5,6 +5,7 @@ import {
   type NotificationPreference,
   type ProcessLog
 } from '@/types/habitTableData'
+import { midnightTimestamp } from '@/utils/DateHandler'
 import { Timestamp } from 'firebase/firestore'
 
 export const LoadedInitialHabitData = (habitData: HabitTableData): Omit<HabitTableData, 'id'> => ({
@@ -34,7 +35,7 @@ export const emptyHabitData = (): Omit<HabitTableData, 'id'> => ({
   targetValue: 0,
   targetUnit: Unit.Pages, // Default to "page(s)"
   frequency: Frequency.Daily, // Default to "day"
-  startDate: Timestamp.now().toMillis(), // Current time in milliseconds
+  startDate: midnightTimestamp().toMillis(), // Current time in milliseconds
   daysKept: 0,
   isActive: true, // Default to active habit
   lastNotification: 0, // Default no notifications sent
@@ -56,7 +57,7 @@ export const defaultHabitData = (userId: string): Omit<HabitTableData, 'id'> => 
   targetValue: 0,
   targetUnit: Unit.Pages, // Default to "page(s)"
   frequency: Frequency.Daily, // Default to "day"
-  startDate: Timestamp.now().toMillis(), // Current time in milliseconds
+  startDate: midnightTimestamp().toMillis(), // Current time in milliseconds
   daysKept: 0,
   isActive: true, // Default to active habit
   lastNotification: 0, // Default no notifications sent
