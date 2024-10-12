@@ -37,7 +37,7 @@ const fetchItems = async ({
     return { items: [], total: 0 }
   }
   const habits = await getUserHabits(userId)
-
+  console.log('Habits:', habits)
   if (habits.length === 0) {
     return { items: [], total: 0 }
   }

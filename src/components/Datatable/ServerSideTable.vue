@@ -50,17 +50,18 @@ const emits = defineEmits<{
 }>()
 
 const authStore = useAuthStore()
-const itemsPerPage = ref(5)
+const itemsPerPage = ref(0)
 const serverItems: Ref<T[]> = ref([])
 const loading = ref(true)
 const totalItems = ref(0)
 
-function loadItems({ page, itemsPerPage, sortBy, userId }: FetchItemsParams) {
+function loadItems({ page, itemsPerPage, sortBy }: FetchItemsParams) {
   if (!authStore.user) {
     console.log('User is not signed in, skipping loadItems.')
     return
   }
 
+  const userId = authStore.user.uid
   props
     .fetchItems<T>({
       page,
@@ -81,9 +82,10 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     console.log('User is signed in:', user)
     authStore.user = user
-    loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: [], userId: authStore.user.uid })
+    itemsPerPage.value = 5
   } else {
     console.log('No user is signed in')
+    loading.value = false
   }
 })
 </script>
