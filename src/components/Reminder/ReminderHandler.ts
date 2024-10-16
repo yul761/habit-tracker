@@ -1,4 +1,4 @@
-import { type HabitTableData, Frequency } from '@/types/habitTableData'
+import { type CompletionLog, type HabitTableData, Frequency } from '@/types/habitTableData'
 
 export const IsDueToday = (data: HabitTableData) => {
   const today = new Date()
@@ -19,4 +19,19 @@ export const IsDueToday = (data: HabitTableData) => {
     default:
       throw new Error('Invalid frequency')
   }
+}
+
+export const IsCompletedToday = (completeLogs: CompletionLog[]) => {
+  const today = new Date()
+  return completeLogs.some((log) => {
+    const logDate = convertFirestoreTimestampToDate(log.Date)
+    return logDate.getDate() === today.getDate()
+  })
+}
+
+function convertFirestoreTimestampToDate(timestamp: {
+  seconds: number
+  nanoseconds: number
+}): Date {
+  return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000)
 }

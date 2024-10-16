@@ -3,7 +3,8 @@ import {
   Unit,
   Frequency,
   type NotificationPreference,
-  type ProcessLog
+  type ProcessLog,
+  type CompletionLog
 } from '@/types/habitTableData'
 import { midnightTimestamp } from '@/utils/DateHandler'
 import { Timestamp } from 'firebase/firestore'
@@ -24,6 +25,7 @@ export const LoadedInitialHabitData = (habitData: HabitTableData): Omit<HabitTab
   userId: habitData.userId,
   notificationPreferences: habitData.notificationPreferences,
   processLog: habitData.processLog,
+  completionLog: habitData.completionLog,
   streak: habitData.streak,
   notes: habitData.notes,
   reminderTime: habitData.reminderTime,
@@ -46,6 +48,7 @@ export const emptyHabitData = (): Omit<HabitTableData, 'id'> => ({
   userId: '',
   notificationPreferences: {} as any, // Default value, assuming this is populated later
   processLog: {} as any, // Default value, assuming this is populated later
+  completionLog: {} as any, // Default
   streak: 0, // Default streak
   notes: '',
   reminderTime: '',
@@ -68,6 +71,7 @@ export const defaultHabitData = (userId: string): Omit<HabitTableData, 'id'> => 
   userId,
   notificationPreferences: {} as any, // Default value, assuming this is populated later
   processLog: {} as any, // Default value, assuming this is populated later
+  completionLog: {} as any, // Default value, assuming this is populated later
   streak: 0, // Default streak
   notes: '',
   reminderTime: '',
@@ -83,5 +87,10 @@ export const defaultNotificationPreference = (): NotificationPreference => ({
 export const defaultProcessLog = (): ProcessLog => ({
   Date: new Date(),
   Value: 0,
+  notes: ''
+})
+
+export const defaultCompletionLog = (): CompletionLog => ({
+  Date: new Date(),
   notes: ''
 })

@@ -37,6 +37,7 @@ export interface HabitTableData extends TableData {
   userId: string // ID of the user who created the habit
   notificationPreferences: DocumentReference // Reference to user's notification preferences
   processLog: DocumentReference // Reference to the log for processing
+  completionLog: DocumentReference // Reference to the log for completions
 }
 
 export interface NotificationPreference extends TableData {
@@ -48,5 +49,10 @@ export interface NotificationPreference extends TableData {
 export interface ProcessLog extends TableData {
   Date: Date
   Value: number
+  notes: string
+}
+
+export interface CompletionLog extends TableData {
+  Date: Timestamp
   notes: string
 }

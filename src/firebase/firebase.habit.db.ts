@@ -1,5 +1,6 @@
 import { db } from '@/firebase/firebase.base'
 import {
+  type CompletionLog,
   type HabitTableData,
   type NotificationPreference,
   type ProcessLog
@@ -15,7 +16,11 @@ import {
   addDoc,
   arrayUnion
 } from 'firebase/firestore'
-import { defaultProcessLog, defaultNotificationPreference } from '@/firebase/habit.template'
+import {
+  defaultProcessLog,
+  defaultNotificationPreference,
+  defaultCompletionLog
+} from '@/firebase/habit.template'
 
 export async function getUserHabits(userId: string) {
   try {
@@ -152,5 +157,53 @@ export async function updateHabit(
   } catch (error) {
     console.error('Error updating habit:', error)
     return null
+  }
+}
+
+export async function addCompletionLog(
+  userId: string,
+  habitId: string,
+  completionLog: CompletionLog
+) {
+  try {
+    // Step 1: Get a reference to the specific habit document
+    const habitDocRef = doc(db, 'user', userId, 'habits', habitId)
+
+    // Step 2: Create the completionLog document
+    const completionLogRef = await addDoc(
+      collection(db, 'user', userId, 'habits', habitId, 'completionLogs'),
+      completionLog
+    )
+    console.log('Completion log document created with ID:', completionLogRef.id)
+
+    // Step 3: Add the completionLog reference to the habit document
+    await updateDoc(habitDocRef, {
+      completionLog: arrayUnion(completionLogRef)
+    })
+
+    console.log('Completion log reference added to habit with ID:', habitId)
+
+    return true
+  } catch (error) {
+    console.error('Error adding completion log:', error)
+    return false
+  }
+}
+
+export async function getCompletionLogs(userId: string, habitId: string) {
+  try {
+    const completionLogsRef = collection(db, 'user', userId, 'habits', habitId, 'completionLogs')
+    const querySnapshot = await getDocs(completionLogsRef)
+
+    const completionLogs: CompletionLog[] = []
+    querySnapshot.forEach((doc) => {
+      const completionLogData = doc.data() as CompletionLog
+      completionLogs.push({ ...completionLogData, id: doc.id })
+    })
+
+    return completionLogs
+  } catch (error) {
+    console.error('Error getting completion logs:', error)
+    return []
   }
 }
