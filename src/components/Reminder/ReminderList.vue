@@ -13,11 +13,17 @@
         v-for="(task, i) in todayTasks"
         :key="i"
         :value="task"
-        :title="task.task"
         :class="{ 'completed-task': task.isCompleted }"
         :disabled="task.isCompleted"
         @click="openModal(task)"
       >
+        <v-list-item-title :class="{ 'completed-title': task.isCompleted }">{{
+          task.task
+        }}</v-list-item-title>
+        <v-list-item-subtitle>{{ task.isCompleted ? 'Completed' : '' }}</v-list-item-subtitle>
+        <template v-slot:append>
+          <v-icon v-if="task.isCompleted" color="green">mdi-check-circle</v-icon>
+        </template>
       </v-list-item>
     </v-list>
     <v-dialog v-model="isModalOpen" max-width="500px">
@@ -38,28 +44,35 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { formatDate } from '@/utils/DateHandler'
-import { IsCompletedToday, IsDueToday } from '@/components/Reminder/ReminderHandler'
-import type { HabitTableData } from '@/types/habitTableData'
+import { IsCompletedToday, IsDueToday, UpdateStreak } from '@/components/Reminder/ReminderHandler'
+import type { HabitTableData, ReminderListData } from '@/types/habitTableData'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/firebase/firebase.base'
-import { getUserHabits, addCompletionLog, getCompletionLogs } from '@/firebase/firebase.habit.db'
+import {
+  getUserHabits,
+  addCompletionLog,
+  getCompletionLogs,
+  updateHabit
+} from '@/firebase/firebase.habit.db'
 import { Timestamp } from 'firebase/firestore'
 
 const currentDate = ref(formatDate(new Date()))
 const habits = reactive<HabitTableData[]>([])
-const todayTasks = ref<HabitTableData[]>([])
+const todayTasks = ref<ReminderListData[]>([])
 const isLoading = ref(true)
 
 async function fetchTodayTasks() {
   isLoading.value = true
   const tasksForToday = []
   for (const task of habits) {
-    if (IsDueToday(task) && task.userId && task.id) {
+    if (IsDueToday(task) && task.userId && task.id && task.isActive) {
       const completionLogs = await getCompletionLogs(task.userId, task.id)
       tasksForToday.push({ ...task, isCompleted: IsCompletedToday(completionLogs) })
     }
   }
-  todayTasks.value = tasksForToday
+  todayTasks.value = tasksForToday.sort(
+    (a: ReminderListData, b: ReminderListData) => Number(a.isCompleted) - Number(b.isCompleted)
+  )
   isLoading.value = false
 }
 
@@ -91,6 +104,7 @@ async function markTaskAsCompleted() {
     }
     if (selectedTask.value.userId && selectedTask.value.id) {
       addCompletionLog(selectedTask.value.userId, selectedTask.value.id, completionLog)
+      await UpdateStreak(selectedTask.value)
     } else {
       console.error('User ID or Task ID is undefined')
     }
@@ -145,8 +159,11 @@ onAuthStateChanged(auth, (user) => {
 }
 
 .completed-task {
+  color: green;
+}
+
+.completed-title {
   text-decoration: line-through;
-  color: gray;
 }
 
 .loading-container {

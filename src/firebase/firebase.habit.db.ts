@@ -16,11 +16,7 @@ import {
   addDoc,
   arrayUnion
 } from 'firebase/firestore'
-import {
-  defaultProcessLog,
-  defaultNotificationPreference,
-  defaultCompletionLog
-} from '@/firebase/habit.template'
+import { defaultProcessLog, defaultNotificationPreference } from '@/firebase/habit.template'
 
 export async function getUserHabits(userId: string) {
   try {

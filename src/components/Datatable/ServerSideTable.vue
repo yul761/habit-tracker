@@ -23,6 +23,11 @@
     <template #item.name="{ item }">
       <slot name="item.name" :item="item"></slot>
     </template>
+    <template #item.isActive="{ item }">
+      <v-row align="center" justify="end">
+        <v-checkbox v-model="item.isActive" disabled />
+      </v-row>
+    </template>
   </v-data-table-server>
 </template>
 

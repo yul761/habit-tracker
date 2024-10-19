@@ -89,8 +89,3 @@ export const defaultProcessLog = (): ProcessLog => ({
   Value: 0,
   notes: ''
 })
-
-export const defaultCompletionLog = (): CompletionLog => ({
-  Date: new Date(),
-  notes: ''
-})

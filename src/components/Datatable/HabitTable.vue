@@ -24,7 +24,7 @@ import { getUserHabits } from '@/firebase/firebase.habit.db'
 const headers = ref<Header[]>([
   { title: 'Task', align: 'start', sortable: false, key: 'name' },
   { title: 'Target', key: 'target', align: 'end' },
-  { title: 'Habit Streak', key: 'daysKept', align: 'end' }
+  { title: 'Is Active', key: 'isActive', align: 'end' }
 ])
 
 const fetchItems = async ({

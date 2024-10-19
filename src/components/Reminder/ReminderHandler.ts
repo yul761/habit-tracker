@@ -1,3 +1,4 @@
+import { updateHabit } from '@/firebase/firebase.habit.db'
 import { type CompletionLog, type HabitTableData, Frequency } from '@/types/habitTableData'
 
 export const IsDueToday = (data: HabitTableData) => {
@@ -34,4 +35,14 @@ function convertFirestoreTimestampToDate(timestamp: {
   nanoseconds: number
 }): Date {
   return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000)
+}
+
+export const UpdateStreak = async (data: HabitTableData) => {
+  const userId = data.userId
+  const habitId = data.id as string
+  const streak = data.streak + 1
+  const daysKept = data.daysKept + 1
+  const longestStreak = data.longestStreak < streak ? streak : data.longestStreak
+
+  await updateHabit(userId, habitId, { streak, longestStreak, daysKept })
 }

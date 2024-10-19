@@ -74,14 +74,8 @@
         <v-col cols="12">
           <v-textarea label="Notes" v-model="habit.notes" outlined></v-textarea>
         </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Days Kept"
-            type="number"
-            v-model="habit.daysKept"
-            @input="habit.daysKept = Number(habit.daysKept)"
-            outlined
-          ></v-text-field>
+        <v-col cols="12" class="py-1">
+          <v-checkbox v-model="habit.isActive" label="Is Active"></v-checkbox>
         </v-col>
         <v-col cols="12">
           <slot name="submit-button" />

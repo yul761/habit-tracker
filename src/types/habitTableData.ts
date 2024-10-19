@@ -15,7 +15,9 @@ export enum Unit {
   Km = 'km',
   Miles = 'miles'
 }
-
+export interface ReminderListData extends HabitTableData {
+  isCompleted: boolean
+}
 export interface HabitTableData extends TableData {
   task: string
   targetValue: number // e.g., 5
