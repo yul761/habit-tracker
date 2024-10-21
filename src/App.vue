@@ -34,6 +34,15 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 </script>
 
 <style scoped>
+body {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
 .clickable {
   cursor: pointer;
 }

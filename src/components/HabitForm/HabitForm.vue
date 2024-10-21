@@ -135,5 +135,10 @@ const handleSubmit = () => {
 <style scoped>
 .habit-detail-container {
   grid-column: span 2;
+  background: white;
+  padding: 30px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>

@@ -13,6 +13,7 @@
         v-for="(task, i) in todayTasks"
         :key="i"
         :value="task"
+        class="border-bottom"
         :class="{ 'completed-task': task.isCompleted }"
         :disabled="task.isCompleted"
         @click="openModal(task)"

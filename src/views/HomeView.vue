@@ -1,7 +1,7 @@
 <template>
   <main class="mt-4 w-100 grid-container" v-if="isRootPath">
-    <habit-table class="w-100" />
-    <reminder-list class="w-100" />
+    <habit-table class="w-100 card-container" />
+    <reminder-list class="w-100 card-container" />
   </main>
   <router-view v-else />
 </template>
@@ -30,5 +30,13 @@ const isRootPath = computed(() => route.path === '/')
 
 .grid-item {
   width: 100%; /* Ensure the grid item takes up full width of its column */
+}
+
+.card-container {
+  background: white;
+  padding: 30px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>
