@@ -55,50 +55,43 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-export default {
-  name: 'HabitTrackerIntro',
-  data() {
-    return {
-      features: [
-        {
-          icon: 'mdi-checkbox-marked-circle-outline',
-          title: 'Create Custom Habits',
-          description: 'Set up personalized habits tailored to your goals'
-        },
-        {
-          icon: 'mdi-bell-outline',
-          title: 'Daily Reminders',
-          description: 'Get notified via email or SMS to stay on track'
-        },
-        {
-          icon: 'mdi-chart-line',
-          title: 'Track Your Progress',
-          description: 'Monitor your streaks and celebrate your achievements'
-        }
-      ],
-      howItWorks: [
-        'Create your user profile',
-        'Set up your habits (e.g., read 5 pages per day)',
-        'Receive daily notifications',
-        'Mark habits as completed',
-        'View your progress and streaks'
-      ]
-    }
+const features = ref([
+  {
+    icon: 'mdi-checkbox-marked-circle-outline',
+    title: 'Create Custom Habits',
+    description: 'Set up personalized habits tailored to your goals'
   },
-  computed: {
-    isAuthenticated() {
-      const authStore = useAuthStore()
-      return authStore.isAuthenticated
-    }
+  {
+    icon: 'mdi-bell-outline',
+    title: 'Daily Reminders',
+    description: 'Get notified via email or SMS to stay on track'
   },
-  methods: {
-    proceedToHabits() {
-      this.$router.push('/')
-    }
+  {
+    icon: 'mdi-chart-line',
+    title: 'Track Your Progress',
+    description: 'Monitor your streaks and celebrate your achievements'
   }
+])
+
+const howItWorks = ref([
+  'Create your user profile',
+  'Set up your habits (e.g., read 5 pages per day)',
+  'Receive daily notifications',
+  'Mark habits as completed',
+  'View your progress and streaks'
+])
+
+const authStore = useAuthStore()
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+
+const router = useRouter()
+const proceedToHabits = () => {
+  router.push('/')
 }
 </script>
 
