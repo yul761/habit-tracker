@@ -51,7 +51,7 @@
           <div v-if="confirmPassword" class="password-match-text">{{ passwordMatchText }}</div>
         </div>
         <button type="submit" class="btn btn-primary w-100" :disabled="loading">
-          <span>Sign Up</span>
+          <span style="color: white">Sign Up</span>
           <span
             v-if="loading"
             class="spinner-border spinner-border-sm ms-2"

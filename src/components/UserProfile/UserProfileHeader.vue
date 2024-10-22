@@ -39,7 +39,7 @@ const handleSelect = (item: string) => {
       break
     case DropdownItems.SignOut:
       signOutUser()
-      router.push('/')
+      router.push('/welcome')
       break
     default:
       console.log('Unknown item selected:', item)

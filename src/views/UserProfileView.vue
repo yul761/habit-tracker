@@ -250,5 +250,6 @@ const updateProfile = () => {
 
 .updateProfile {
   margin-left: 1.5rem;
+  color: white;
 }
 </style>

@@ -45,7 +45,7 @@
       <section>
         <h2>Ready to Transform Your Life?</h2>
         <p>Join thousands of users who are already building better habits with HabitHub.</p>
-        <a href="#" class="cta-button">Sign Up Now</a>
+        <a href="#" class="cta-button" @click.prevent="goToSignUp">Sign Up Now</a>
       </section>
     </main>
 
@@ -92,6 +92,9 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const router = useRouter()
 const proceedToHabits = () => {
   router.push('/')
+}
+const goToSignUp = () => {
+  router.push('/signup')
 }
 </script>
 

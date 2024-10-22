@@ -59,10 +59,11 @@
 <script setup lang="ts">
 import Dropdown from '@/components/Dropdown/ButtonDropdown.vue'
 import { useAuthStore } from '@/stores/auth'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
 
 const authStore = useAuthStore()
+const router = useRouter()
 const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
@@ -78,6 +79,7 @@ const handleLogin = async () => {
     console.error(error)
   } finally {
     isLoading.value = false
+    router.push('/')
   }
 }
 // Reactive state for password visibility

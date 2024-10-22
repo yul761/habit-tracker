@@ -4,8 +4,7 @@
       <img
         alt="Vue logo"
         class="logo clickable"
-        src="@/assets/logo.svg"
-        width="50"
+        src="@/assets/logo-no-background.png"
         height="50"
         @click="() => router.push('/')"
       />

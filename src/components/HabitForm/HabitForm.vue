@@ -1,5 +1,5 @@
 <template>
-  <v-container class="habit-detail-container mt-4">
+  <v-container class="habit-detail-container">
     <v-form @submit.prevent="handleSubmit">
       <v-row>
         <v-col cols="12" md="6">
@@ -140,5 +140,6 @@ const handleSubmit = () => {
   margin-bottom: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 100px;
 }
 </style>
