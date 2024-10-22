@@ -7,17 +7,23 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
       }
-    ]
+    ],
+    "env": {
+      "VITE_APP_API_KEY": "AIzaSyBJ-1T0RWIssf0PPFoeYkF39vdrgEqgzes",
+      "VITE_APP_AUTH_DOMAIN": "habit-tracker-a6b59.firebaseapp.com",
+      "VITE_APP_PROJECT_ID": "habit-tracker-a6b59",
+      "VITE_APP_STORAGE_BUCKET": "habit-tracker-a6b59.appspot.com",
+      "VITE_APP_MESSAGING_SENDER_ID": "974692616153",
+      "VITE_APP_APP_ID": "1:974692616153:web:033a522da232138e55bbc8",
+      "VITE_APP_MEASUREMENT_ID": "G-J6BD5PZC8Z",
+      "VITE_APP_GIS_CLIENT_ID": "161181628629-q35h9ssj85oe3j8v50vho59vnore04qm.apps.googleusercontent.com"
+    }
   }
 }
