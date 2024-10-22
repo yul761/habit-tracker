@@ -113,13 +113,14 @@ const formattedEndDate = computed<string>({
   }
 })
 
+//@ts-ignore
 const startDateArray = computed({
   get: () => [new Date(habit.startDate)],
   set: (value: Date) => {
     habit.startDate = new Date(value).getTime()
   }
 })
-
+//@ts-ignore
 const endDateArray = computed({
   get: () => (habit.endDate ? [new Date(habit.endDate)] : []),
   set: (value: Date) => {

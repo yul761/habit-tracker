@@ -18,7 +18,6 @@
 
 <script setup lang="ts">
 import { reactive, computed, onMounted, ref } from 'vue'
-import { habits } from '@/dummyData'
 import { Unit, Frequency, type HabitTableData } from '@/types/habitTableData'
 import _ from 'lodash'
 import { onBeforeRouteLeave } from 'vue-router'

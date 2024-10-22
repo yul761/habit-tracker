@@ -36,11 +36,14 @@ const initialHabit = reactive<HabitTableData>(emptyHabitData())
 const units = Object.values(Unit)
 const frequencies = Object.values(Frequency)
 
-const findDifferences = (obj1, obj2) => {
-  const differences = {}
+const findDifferences = (obj1: HabitTableData, obj2: HabitTableData) => {
+  const differences: Record<string, any> = {}
   for (const key in obj1) {
-    if (!_.isEqual(obj1[key], obj2[key])) {
-      differences[key] = { obj1: obj1[key], obj2: obj2[key] }
+    if (!_.isEqual(obj1[key as keyof HabitTableData], obj2[key as keyof HabitTableData])) {
+      differences[key] = {
+        obj1: obj1[key as keyof HabitTableData],
+        obj2: obj2[key as keyof HabitTableData]
+      }
     }
   }
   return differences
