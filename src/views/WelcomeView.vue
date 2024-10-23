@@ -35,7 +35,6 @@
 
       <section>
         <h2>See Your Daily Habits at a Glance</h2>
-        <img alt="App Screenshot" class="screenshot" />
         <p>
           The home page displays all the habits you need to complete today, helping you stay focused
           and motivated.
@@ -49,9 +48,9 @@
       </section>
     </main>
 
-    <footer>
+    <!-- <footer>
       <p>Have questions? Check out our <a href="#">FAQ</a> or <a href="#">contact us</a>.</p>
-    </footer>
+    </footer> -->
   </div>
 </template>
 
