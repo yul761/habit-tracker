@@ -1,8 +1,11 @@
-// functions/index.js
+// Load environment variables from .env file for local development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 const { onSchedule } = require('firebase-functions/v2/scheduler')
 const { onRequest, onCall } = require('firebase-functions/v2/https')
-require('firebase-functions/params')
+const { defineString } = require('firebase-functions/params')
 const { initializeApp } = require('firebase-admin/app')
 const { getFirestore } = require('firebase-admin/firestore')
 const nodemailer = require('nodemailer')
@@ -12,46 +15,31 @@ const { isDueToday, isCompletedToday } = require('./utils')
 // Initialize Firebase Admin
 initializeApp()
 
-// Load environment variables based on environment
-let emailConfig
-let twilioConfig
+// Define environment parameters for production
+const emailUser = defineString('EMAIL_USER')
+const emailPassword = defineString('EMAIL_APP_PASSWORD')
+const twilioAccountSid = defineString('TWILIO_ACCOUNT_SID')
+const twilioAuthToken = defineString('TWILIO_AUTH_TOKEN')
+const twilioPhoneNumber = defineString('TWILIO_PHONE_NUMBER')
 
-if (process.env.NODE_ENV === 'production') {
-  // Production: use Firebase config
-  emailConfig = {
-    user: process.env.FIREBASE_CONFIG_EMAIL_USER,
-    password: process.env.FIREBASE_CONFIG_EMAIL_PASSWORD
-  }
-  twilioConfig = {
-    accountSid: process.env.FIREBASE_CONFIG_TWILIO_ACCOUNT_SID,
-    authToken: process.env.FIREBASE_CONFIG_TWILIO_AUTH_TOKEN,
-    phoneNumber: process.env.FIREBASE_CONFIG_TWILIO_PHONE_NUMBER
-  }
-} else {
-  // Development: use .env file
-  require('dotenv').config()
-  emailConfig = {
-    user: process.env.EMAIL_USER,
-    password: process.env.EMAIL_APP_PASSWORD
-  }
-  twilioConfig = {
-    accountSid: process.env.TWILIO_ACCOUNT_SID,
-    authToken: process.env.TWILIO_AUTH_TOKEN,
-    phoneNumber: process.env.TWILIO_PHONE_NUMBER
-  }
-}
+// Determine environment variables based on environment
+const EMAIL_USER = process.env.EMAIL_USER || emailUser.value()
+const EMAIL_APP_PASSWORD = process.env.EMAIL_APP_PASSWORD || emailPassword.value()
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || twilioAccountSid.value()
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || twilioAuthToken.value()
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER || twilioPhoneNumber.value()
 
 // Email configuration
 const emailTransporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: emailConfig.user,
-    pass: emailConfig.password
+    user: EMAIL_USER,
+    pass: EMAIL_APP_PASSWORD
   }
 })
 
 // Twilio configuration
-const twilioClient = twilio(twilioConfig.accountSid, twilioConfig.authToken)
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 /**
  * @param {string} notificationType
@@ -111,7 +99,7 @@ async function sendNotifications(notificationType) {
         if (user.email) {
           notifications.push(
             emailTransporter.sendMail({
-              from: emailConfig.user,
+              from: EMAIL_USER,
               to: user.email,
               subject: `Notification`,
               text: message
@@ -123,7 +111,7 @@ async function sendNotifications(notificationType) {
           notifications.push(
             twilioClient.messages.create({
               body: message,
-              from: twilioConfig.phoneNumber,
+              from: TWILIO_PHONE_NUMBER,
               to: user.phoneNumber
             })
           )
@@ -146,7 +134,9 @@ exports.morningNotification = onSchedule(
     schedule: '0 9 * * *',
     timeZone: 'America/New_York',
     maxInstances: 1,
-    retryCount: 3,
+    retryConfig: {
+      retryCount: 3
+    },
     labels: {
       type: 'notification',
       time: 'morning'
@@ -162,7 +152,9 @@ exports.afternoonNotification = onSchedule(
     schedule: '0 13 * * *',
     timeZone: 'America/New_York',
     maxInstances: 1,
-    retryCount: 3,
+    retryConfig: {
+      retryCount: 3
+    },
     labels: {
       type: 'notification',
       time: 'afternoon'
@@ -178,7 +170,9 @@ exports.eveningNotification = onSchedule(
     schedule: '0 18 * * *',
     timeZone: 'America/New_York',
     maxInstances: 1,
-    retryCount: 3,
+    retryConfig: {
+      retryCount: 3
+    },
     labels: {
       type: 'notification',
       time: 'evening'
