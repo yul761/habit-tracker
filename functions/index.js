@@ -2,17 +2,19 @@
 
 const { onSchedule } = require('firebase-functions/v2/scheduler')
 const { onRequest, onCall } = require('firebase-functions/v2/https')
-const { defineString } = require('firebase-functions/params')
+require('firebase-functions/params')
 const { initializeApp } = require('firebase-admin/app')
 const { getFirestore } = require('firebase-admin/firestore')
 const nodemailer = require('nodemailer')
 const twilio = require('twilio')
+const { isDueToday, isCompletedToday } = require('./utils')
 
 // Initialize Firebase Admin
 initializeApp()
 
 // Load environment variables based on environment
-let emailConfig, twilioConfig
+let emailConfig
+let twilioConfig
 
 if (process.env.NODE_ENV === 'production') {
   // Production: use Firebase config
@@ -51,40 +53,81 @@ const emailTransporter = nodemailer.createTransport({
 // Twilio configuration
 const twilioClient = twilio(twilioConfig.accountSid, twilioConfig.authToken)
 
+/**
+ * @param {string} notificationType
+ */
 async function sendNotifications(notificationType) {
   const db = getFirestore()
 
   try {
-    const usersSnapshot = await db
-      .collection('users')
-      .where('notifications.enabled', '==', true)
+    // Query for users who want to be notified through email
+    const emailUsersSnapshot = await db
+      .collection('user')
+      .where('notifyThroughEmail', '==', true)
       .get()
+
+    // Query for users who want to be notified through SMS
+    const smsUsersSnapshot = await db.collection('user').where('notifyThroughSms', '==', true).get()
+
+    // Merge the results
+    const users = new Map()
+    emailUsersSnapshot.forEach((doc) => users.set(doc.id, doc.data()))
+    smsUsersSnapshot.forEach((doc) => {
+      if (!users.has(doc.id)) {
+        users.set(doc.id, doc.data())
+      }
+    })
 
     const notifications = []
 
-    for (const doc of usersSnapshot.docs) {
-      const user = doc.data()
-      const message = user.notifications.message
+    for (const user of users.values()) {
+      // if user.habits is an array with document reference, get the actual data of habits
+      const habits = await Promise.all(
+        user.habits.map(async (habitRef) => {
+          const doc = await habitRef.get()
+          const habitData = doc.data()
 
-      if (user.email) {
-        notifications.push(
-          emailTransporter.sendMail({
-            from: emailUser,
-            to: user.email,
-            subject: `${notificationType} Notification`,
-            text: message
-          })
-        )
-      }
+          // Get the completeLogs data if completionLog is not null
+          if (habitData.completionLog) {
+            habitData.completionLog = await Promise.all(
+              habitData.completionLog.map(async (logRef) => {
+                const logDoc = await logRef.get()
+                return logDoc.data()
+              })
+            )
+          }
 
-      if (user.phone) {
-        notifications.push(
-          twilioClient.messages.create({
-            body: message,
-            from: twilioPhoneNumber,
-            to: user.phone
-          })
-        )
+          return habitData
+        })
+      )
+
+      const dueHabits = habits.filter(
+        (habit) => isDueToday(habit) && !isCompletedToday(habit.completionLog)
+      )
+
+      for (const habit of dueHabits) {
+        const message = habit.task
+
+        if (user.email) {
+          notifications.push(
+            emailTransporter.sendMail({
+              from: emailConfig.user,
+              to: user.email,
+              subject: `Notification`,
+              text: message
+            })
+          )
+        }
+
+        if (user.phoneNumber) {
+          notifications.push(
+            twilioClient.messages.create({
+              body: message,
+              from: twilioConfig.phoneNumber,
+              to: user.phoneNumber
+            })
+          )
+        }
       }
     }
 
