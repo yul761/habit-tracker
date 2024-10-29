@@ -96,7 +96,7 @@ async function sendNotifications(notificationType) {
       for (const habit of dueHabits) {
         const message = habit.task
 
-        if (user.email) {
+        if (user.notifyThroughEmail && user.email) {
           notifications.push(
             emailTransporter.sendMail({
               from: EMAIL_USER,
@@ -107,7 +107,7 @@ async function sendNotifications(notificationType) {
           )
         }
 
-        if (user.phoneNumber) {
+        if (user.notifyThroughSms && user.phoneNumber) {
           notifications.push(
             twilioClient.messages.create({
               body: message,
