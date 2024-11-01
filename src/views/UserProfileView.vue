@@ -23,8 +23,7 @@
           </div>
         </div>
         <div class="form-group mb-3">
-          <label for="phoneNumber" class="form-label">Phone Number</label>
-          <input type="tel" id="phoneNumber" v-model="phoneNumber" class="form-control" required />
+          <PhoneInputs v-model="phoneNumber" @phone-data="handlePhoneData" required />
           <div class="form-check">
             <input type="checkbox" id="smsUpdates" v-model="smsUpdates" class="form-check-input" />
             <label for="smsUpdates" class="form-check-label">Receive updates through SMS?</label>
@@ -56,6 +55,7 @@ import { ref, onMounted, computed, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { getUserById, updateUser } from '@/firebase/firebase.user.db'
 import { getHabit, getNotificationPreference, getProcessLog } from '@/firebase/firebase.habit.db'
+import PhoneInputs from '@/components/Inputs/PhoneInputs.vue'
 
 const authStore = useAuthStore()
 const loading = ref(false)
@@ -110,6 +110,15 @@ const checkUserData = () => {
   } else {
     setTimeout(checkUserData, 1000) // Check every second until user data is available
   }
+}
+
+const handlePhoneData = (data: {
+  countryCode: string
+  nationalNumber: string
+  fullNumber: string
+  isValid: boolean
+}) => {
+  console.log('Phone data:', data)
 }
 
 onMounted(() => {
