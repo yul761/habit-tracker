@@ -81,6 +81,7 @@ import { getCountryCallingCode } from 'libphonenumber-js/max'
 import examples from 'libphonenumber-js/mobile/examples'
 import * as countryFlagIcons from 'country-flag-icons/unicode'
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
+import { countries } from '@/utils/PhoneInputCountries'
 
 interface Country {
   code: CountryCode
@@ -123,36 +124,30 @@ const props = defineProps({
   defaultCountry: {
     type: String as PropType<CountryCode>,
     default: 'US'
+  },
+  isValid: {
+    type: Boolean,
+    default: true
   }
 })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
+  (e: 'update:isValid', value: boolean): void
   (e: 'phone-data', data: PhoneData): void
   (e: 'validation', isValid: boolean): void
 }>()
 
 // Get country list from libphonenumber-js
-const countries = ref<Country[]>([])
 const selectedCountry = ref<Country | null>(null)
 const phoneNumber = ref('')
 const errorMessage = ref('')
 const phoneNumberPlaceHolder = ref(props.placeholder)
 
 // Initialize countries list
-onMounted(async () => {
-  const countryList = getCountries()
-  countries.value = countryList
-    .map((code) => ({
-      code,
-      dialCode: `+${getCountryCallingCode(code)}`,
-      name: new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name))
-
+onMounted(() => {
   // Set default country
-  selectedCountry.value =
-    countries.value.find((c) => c.code === props.defaultCountry) || countries.value[0]
+  selectedCountry.value = countries.find((c) => c.code === props.defaultCountry) || countries[0]
 })
 
 // Get country flag from country-flag-icons
@@ -185,22 +180,19 @@ const handleInput = () => {
   const formattedNumber = formatter.input(phoneNumber.value)
   phoneNumber.value = formattedNumber
 
-  try {
-    const parsedNumber = parsePhoneNumber(phoneNumber.value, selectedCountry.value.code)
+  const parsedNumber = parsePhoneNumber(phoneNumber.value, selectedCountry.value.code)
 
-    const phoneData: PhoneData = {
-      countryCode: selectedCountry.value.code,
-      nationalNumber: parsedNumber.nationalNumber || '',
-      fullNumber: parsedNumber.number || '',
-      isValid: parsedNumber.isValid()
-    }
-
-    emit('update:modelValue', phoneData.fullNumber)
-    emit('phone-data', phoneData)
-    emit('validation', phoneData.isValid)
-  } catch (error) {
-    console.error('Phone parsing error:', error)
+  const phoneData: PhoneData = {
+    countryCode: selectedCountry.value.code,
+    nationalNumber: parsedNumber.nationalNumber || '',
+    fullNumber: parsedNumber.number || '',
+    isValid: parsedNumber.isValid()
   }
+
+  emit('update:isValid', phoneData.isValid)
+  emit('update:modelValue', phoneData.fullNumber)
+  emit('phone-data', phoneData)
+  emit('validation', phoneData.isValid)
 }
 
 // Get example number for placeholder
@@ -221,7 +213,7 @@ watch(
       try {
         const parsedNumber = parsePhoneNumber(newValue)
         if (parsedNumber) {
-          const country = countries.value.find((c) => c.code === parsedNumber.country)
+          const country = countries.find((c) => c.code === parsedNumber.country)
           if (country) {
             selectedCountry.value = country
             phoneNumber.value = parsedNumber.formatNational()

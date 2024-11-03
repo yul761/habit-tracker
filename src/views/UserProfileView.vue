@@ -23,7 +23,12 @@
           </div>
         </div>
         <div class="form-group mb-3">
-          <PhoneInputs v-model="phoneNumber" @phone-data="handlePhoneData" required />
+          <PhoneInputs
+            v-model="phoneNumber"
+            v-model:isValid="isPhoneNumberValid"
+            @phone-data="handlePhoneData"
+            required
+          />
           <div class="form-check">
             <input type="checkbox" id="smsUpdates" v-model="smsUpdates" class="form-check-input" />
             <label for="smsUpdates" class="form-check-label">Receive updates through SMS?</label>
@@ -32,7 +37,7 @@
         <button
           type="submit"
           class="btn btn-primary w-100 d-flex justify-content-center align-items-center"
-          :disabled="!isFormModified"
+          :disabled="!isFormModified || !isPhoneNumberValid"
         >
           <span class="updateProfile">Update Profile</span>
           <span class="indicator-container ms-2">
@@ -66,6 +71,7 @@ const email = ref('')
 const phoneNumber = ref('')
 const emailUpdates = ref(false)
 const smsUpdates = ref(false)
+const isPhoneNumberValid = ref(false)
 
 const initialData = reactive({
   displayName: '',
