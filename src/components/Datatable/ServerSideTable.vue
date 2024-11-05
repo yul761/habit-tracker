@@ -33,12 +33,10 @@
 
 <script setup lang="ts" generic="T extends TableData">
 import { ref, type Ref } from 'vue'
-import { defineEmits } from 'vue'
 import type { Header, FetchItemsParams, FetchItemsResult } from './interfaces/serverSideTable'
 import type { TableData } from '@/types/tableData'
 import { useAuthStore } from '@/stores/auth'
 import { auth } from '@/firebase/firebase.base'
-import { defaultHabitData } from '@/firebase/habit.template'
 import { onAuthStateChanged } from 'firebase/auth'
 import _ from 'lodash'
 

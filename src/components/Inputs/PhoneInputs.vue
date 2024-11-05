@@ -70,16 +70,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import type { PropType } from 'vue'
-import {
-  parsePhoneNumber,
-  getCountries,
-  type CountryCode,
-  AsYouType,
-  getExampleNumber
-} from 'libphonenumber-js'
-import { getCountryCallingCode } from 'libphonenumber-js/max'
+import { parsePhoneNumber, type CountryCode, AsYouType, getExampleNumber } from 'libphonenumber-js'
 import examples from 'libphonenumber-js/mobile/examples'
-import * as countryFlagIcons from 'country-flag-icons/unicode'
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 import { countries } from '@/utils/PhoneInputCountries'
 

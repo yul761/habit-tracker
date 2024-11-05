@@ -59,7 +59,6 @@
 import { ref, onMounted, computed, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { getUserById, updateUser } from '@/firebase/firebase.user.db'
-import { getHabit, getNotificationPreference, getProcessLog } from '@/firebase/firebase.habit.db'
 import PhoneInputs from '@/components/Inputs/PhoneInputs.vue'
 
 const authStore = useAuthStore()
@@ -84,14 +83,6 @@ const initialData = reactive({
 const loadUserData = async () => {
   console.log('Loading user data...', authStore.user)
   if (authStore.user) {
-    var habitId = 'Bc4XFTnCOl6LyJdztDj8'
-    const habits = await getHabit(authStore.user.uid, habitId)
-    console.log({ habits })
-    const notificationPreference = await getNotificationPreference(authStore.user.uid, habitId)
-    console.log({ notificationPreference })
-    const processLog = await getProcessLog(authStore.user.uid, habitId)
-    console.log({ processLog })
-    console.log('User ID:', authStore.user.uid)
     const user = await getUserById(authStore.user.uid)
     if (user) {
       displayName.value = user.displayName ?? ''

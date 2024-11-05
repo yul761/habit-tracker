@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, defineProps, defineEmits } from 'vue'
+import { computed, reactive, defineProps } from 'vue'
 import { Unit, Frequency, type HabitTableData } from '@/types/habitTableData'
 
 const props = defineProps<{

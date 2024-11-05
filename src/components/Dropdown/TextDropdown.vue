@@ -17,8 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from 'vue'
-
 defineProps({
   items: {
     type: Array as () => string[],
