@@ -9,17 +9,18 @@
 }
 
 .action-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
+  width: 100%;
+  text-align: center;
   margin: 20px 0;
 }
 
 .cta-button {
+  display: inline-block;
   padding: 12px 24px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
+  margin: 0 5px;
 }
 
 .cta-button.primary {
@@ -39,20 +40,21 @@
 }
 
 .share-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
+  width: 100%;
+  text-align: center;
 }
 
 .share-btn {
+  display: inline-block;
   width: 32px;
   height: 32px;
+  line-height: 32px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
   color: white;
   text-decoration: none;
+  margin: 0 5px;
 }
 
 .share-btn.twitter {
@@ -64,46 +66,53 @@
 .share-btn.linkedin {
   background: #0077b5;
 }
+
 .habit-card {
   background: #f8f9fa;
   border-radius: 12px;
   padding: 20px;
   margin: 20px 0;
+  text-align: center;
 }
 
 .habit-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  width: 100%;
+  text-align: center;
   margin-bottom: 16px;
 }
 
 .habit-icon {
+  display: inline-block;
   font-size: 24px;
+  vertical-align: middle;
+  margin-right: 12px;
 }
 
 .habit-name {
+  display: inline-block;
   margin: 0;
   color: #2d3748;
   font-size: 18px;
+  vertical-align: middle;
 }
 
 .streak-calendar {
-  display: flex;
-  gap: 6px;
-  justify-content: space-between;
+  width: 100%;
+  text-align: center;
   margin-bottom: 8px;
 }
 
 .day-marker {
+  display: inline-block;
   width: 30px;
   height: 30px;
+  line-height: 30px;
   border-radius: 50%;
   background: #edf2f7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
   color: #718096;
+  margin: 0 3px;
 }
 
 .day-marker.completed {
@@ -127,18 +136,21 @@
 .footer-content {
   max-width: 400px;
   margin: 0 auto;
+  text-align: center;
 }
 
 .footer-logo {
   width: 40px;
   height: auto;
   margin-bottom: 16px;
+  display: inline-block;
 }
 
 .footer-text {
   color: #718096;
   font-size: 14px;
   line-height: 1.5;
+  text-align: center;
 }
 
 .footer-tagline {
@@ -152,13 +164,86 @@
 
 .footer-links {
   font-size: 12px;
+  text-align: center;
 }
 
 .footer-links a {
   color: #718096;
   text-decoration: none;
+  margin: 0 5px;
 }
 
 .footer-links a:hover {
   text-decoration: underline;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin: 20px 0;
+}
+
+.stat-card {
+  display: table-cell;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #718096;
+}
+
+/* Progress Circle */
+.progress-circle {
+  width: 120px;
+  margin: 20px auto;
+  text-align: center;
+  position: relative;
+}
+
+.circular-chart {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #edf2f7;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke: #4caf50;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+}
+
+.percentage {
+  fill: #2d3748;
+  font-size: 16px;
+  text-anchor: middle;
+  font-weight: 600;
+}
+
+.progress-label {
+  text-align: center;
+  color: #718096;
+  font-size: 14px;
+  margin-top: 8px;
 }

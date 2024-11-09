@@ -8,13 +8,12 @@ const { onRequest, onCall } = require('firebase-functions/v2/https')
 const { defineString } = require('firebase-functions/params')
 const { initializeApp } = require('firebase-admin/app')
 const { getFirestore } = require('firebase-admin/firestore')
+const admin = require('firebase-admin')
 const nodemailer = require('nodemailer')
 const twilio = require('twilio')
 const { isDueToday, isCompletedToday } = require('./utils')
 const templateManager = require('./emailTemplateManager')
-
-// Initialize Firebase Admin
-initializeApp()
+const { getLogoUrl } = require('./firebase.storage')
 
 // Define environment parameters for production
 const emailUser = defineString('EMAIL_USER')
@@ -22,6 +21,7 @@ const emailPassword = defineString('EMAIL_APP_PASSWORD')
 const twilioAccountSid = defineString('TWILIO_ACCOUNT_SID')
 const twilioAuthToken = defineString('TWILIO_AUTH_TOKEN')
 const twilioPhoneNumber = defineString('TWILIO_PHONE_NUMBER')
+const storageBucket = defineString('STORAGE_BUCKET')
 
 // Determine environment variables based on environment
 const EMAIL_USER = process.env.EMAIL_USER || emailUser.value()
@@ -29,6 +29,19 @@ const EMAIL_APP_PASSWORD = process.env.EMAIL_APP_PASSWORD || emailPassword.value
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || twilioAccountSid.value()
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || twilioAuthToken.value()
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER || twilioPhoneNumber.value()
+const STORAGE_BUCKET = process.env.STORAGE_BUCKET || storageBucket.value()
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const serviceAccount = require('./serviceAccountKey.json')
+  initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: STORAGE_BUCKET
+  })
+} else {
+  // For production, uses environment credentials
+  initializeApp()
+}
 
 // Email configuration
 const emailTransporter = nodemailer.createTransport({
@@ -101,12 +114,14 @@ async function sendNotifications(notificationType) {
         const message = habit.task
 
         if (user.notifyThroughEmail && user.email) {
+          const brandingLogo = await getLogoUrl('favcon-no-background.png')
+          console.log(brandingLogo)
           const templateData = {
             // Time-based greeting
             timeOfDay: 'Morning', // or "Evening", "Afternoon"
 
             // User info
-            userName: 'John Doe',
+            userName: user.displayName ?? user.email.split('@')[0],
 
             // Progress metrics
             streak: 7,
@@ -118,7 +133,7 @@ async function sendNotifications(notificationType) {
             bestStreak: 14,
 
             // Habit details
-            habitName: 'Morning Meditation',
+            habitName: habit.task,
             lastSevenDays: [
               { completed: true },
               { completed: true },
@@ -144,7 +159,7 @@ async function sendNotifications(notificationType) {
             linkedinShareUrl: 'https://www.linkedin.com/sharing/...',
 
             // Branding
-            logoUrl: 'https://habithub.com/assets/logo.png'
+            logoUrl: brandingLogo
           }
 
           // const emailHtml = templateManager.render('reminder', {
