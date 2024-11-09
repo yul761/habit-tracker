@@ -1,0 +1,11 @@
+{{!-- templates/email/reminder.hbs --}}
+{{#> default title="Habit Reminder"}}
+  <h2>Hello {{userName}}!</h2>
+  <p>Time to complete your habit:</p>
+  <h3>{{habitName}}</h3>
+  <p>Current streak: {{streak}} days</p>
+  <p>{{customMessage}}</p>
+  <a href="{{actionUrl}}" style="background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+    Mark as Complete
+  </a>
+{{/default}}

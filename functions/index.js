@@ -11,6 +11,7 @@ const { getFirestore } = require('firebase-admin/firestore')
 const nodemailer = require('nodemailer')
 const twilio = require('twilio')
 const { isDueToday, isCompletedToday } = require('./utils')
+const templateManager = require('./emailTemplateManager')
 
 // Initialize Firebase Admin
 initializeApp()
@@ -97,12 +98,26 @@ async function sendNotifications(notificationType) {
         const message = habit.task
 
         if (user.notifyThroughEmail && user.email) {
+          const emailHtml = templateManager.render('reminder', {
+            userName: user.name || 'there',
+            habitName: habit.task,
+            streak: habit.streak || 0,
+            customMessage:
+              notificationType === 'Morning'
+                ? 'Start your day right!'
+                : notificationType === 'Evening'
+                  ? 'Do not break your streak!'
+                  : 'Keep up the good work!',
+            actionUrl: `www.habithub.com/habits/${habit.id}/complete`
+          })
+
           notifications.push(
             emailTransporter.sendMail({
               from: EMAIL_USER,
               to: user.email,
-              subject: `Notification`,
-              text: message
+              subject: `${notificationType} Habit Reminder: ${habit.task}`,
+              html: emailHtml,
+              text: `Time to complete your habit: ${habit.task}`
             })
           )
         }

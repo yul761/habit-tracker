@@ -1,0 +1,20 @@
+{{! templates/email/default.hbs }}
+
+<html>
+  <head>
+    <style>
+      .container { max-width: 600px; margin: auto; font-family: Arial; } .header { background:
+      #4CAF50; color: white; padding: 20px; } .content { padding: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='header'>
+        <h1>{{title}}</h1>
+      </div>
+      <div class='content'>
+        {{{content}}}
+      </div>
+    </div>
+  </body>
+</html>
