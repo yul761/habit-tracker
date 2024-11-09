@@ -2,7 +2,10 @@
 const handlebars = require('handlebars')
 const fs = require('fs')
 const path = require('path')
+const { timeOfDay } = require('./utils')
+const juice = require('juice')
 
+handlebars.registerHelper('timeOfDay', timeOfDay)
 /**
  * Class for managing and rendering email templates using Handlebars.
  * @class EmailTemplateManager
@@ -16,8 +19,25 @@ class EmailTemplateManager {
    */
   constructor() {
     this.templates = new Map()
+    this.cssPath = path.join(__dirname, 'templates/email/styles/components.css')
     this.templateDir = path.join(__dirname, 'templates/email')
+    this.loadCss()
     this.loadTemplates()
+  }
+
+  /**
+   * Load the CSS file from the filesystem.
+   * @memberof EmailTemplateManager
+   * @throws {Error} If the CSS file cannot be loaded.
+   * @return {void}
+   */
+  loadCss() {
+    try {
+      this.css = fs.readFileSync(this.cssPath, 'utf8')
+    } catch (error) {
+      console.error(`Failed to load CSS file from ${this.cssPath}:`, error)
+      this.css = '' // Fallback to empty CSS
+    }
   }
 
   /**
@@ -46,7 +66,8 @@ class EmailTemplateManager {
     if (!template) {
       throw new Error(`Template ${templateName} not found`)
     }
-    return template(data)
+    const html = template(data)
+    return juice.inlineContent(html, this.css)
   }
 }
 

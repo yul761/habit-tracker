@@ -77,7 +77,7 @@ async function sendNotifications(notificationType) {
           const habitData = doc.data()
 
           // Get the completeLogs data if completionLog is not null
-          if (habitData.completionLog) {
+          if (Array.isArray(habitData.completionLog) && habitData.completionLog.length > 0) {
             habitData.completionLog = await Promise.all(
               habitData.completionLog.map(async (logRef) => {
                 const logDoc = await logRef.get()
@@ -90,9 +90,12 @@ async function sendNotifications(notificationType) {
         })
       )
 
-      const dueHabits = habits.filter(
-        (habit) => isDueToday(habit) && !isCompletedToday(habit.completionLog)
-      )
+      const dueHabits = habits.filter((habit) => {
+        if (!Array.isArray(habit.completionLog) || habit.completionLog.length === 0) {
+          return isDueToday(habit)
+        }
+        return isDueToday(habit) && !isCompletedToday(habit.completionLog)
+      })
 
       for (const habit of dueHabits) {
         const message = habit.task

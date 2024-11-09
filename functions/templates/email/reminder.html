@@ -1,0 +1,210 @@
+<div class="email-container">
+  <div class="header">
+    <!-- Dynamic greeting based on time -->
+    <div class="time-indicator">{{#if isMorning}}🌅{{else if isEvening}}🌙{{else}}☀️{{/if}}</div>
+    <h1 style="margin: 0; font-size: 24px">{{timeOfDay}} Habit Check-in</h1>
+  </div>
+
+  <div class="content">
+    <h2 style="margin: 0; color: #2d3748">Hello {{userName}}! 👋</h2>
+
+    <!-- Progress Circle -->
+    <div class="progress-circle">
+      <svg viewBox="0 0 36 36" class="circular-chart">
+        <path
+          class="circle-bg"
+          d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+        <path
+          class="circle"
+          stroke-dasharray="{{streakPercentage}}, 100"
+          d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+        <text x="18" y="20.35" class="percentage">{{streak}}</text>
+      </svg>
+      <div class="progress-label">Day Streak</div>
+    </div>
+
+    <!-- Habit Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">{{completionRate}}%</div>
+        <div class="stat-label">Completion Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{daysCompleted}}</div>
+        <div class="stat-label">Total Days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{bestStreak}}</div>
+        <div class="stat-label">Best Streak</div>
+      </div>
+    </div>
+
+    <!-- Current Habit Card -->
+    <div class="habit-card">
+      <div class="habit-icon">✨</div>
+      <h3 style="margin: 0; color: #2d3748">{{habitName}}</h3>
+      <!-- Mini Calendar -->
+      <div class="streak-calendar">
+        {{#each lastSevenDays}}
+        <div class="day-marker {{#if completed}}completed{{/if}}"></div>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Motivational Quote -->
+    <div class="quote-box">
+      <div class="quote-text">"{{motivationalQuote}}"</div>
+      <div class="quote-author">- {{quoteAuthor}}</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <a href="{{actionUrl}}" class="cta-button primary"> ✅ Complete Today's Habit </a>
+      <a href="{{statsUrl}}" class="cta-button secondary"> 📊 View Full Stats </a>
+    </div>
+
+    <!-- Social Share -->
+    <div class="social-share">
+      <p>Share your progress:</p>
+      <div class="share-buttons">
+        <a href="{{twitterShareUrl}}" class="share-btn twitter">𝕏</a>
+        <a href="{{facebookShareUrl}}" class="share-btn facebook">f</a>
+        <a href="{{linkedinShareUrl}}" class="share-btn linkedin">in</a>
+      </div>
+    </div>
+
+    <footer class="email-footer">
+      <img src="{{logoUrl}}" alt="HabitHub" class="footer-logo" />
+      <div class="footer-text">
+        Stay consistent with your habits!<br />
+        <small>HabitHub - Build Better Habits Together</small>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<style>
+  /* Add these new styles */
+  .progress-circle {
+    width: 120px;
+    margin: 20px auto;
+    text-align: center;
+  }
+
+  .circular-chart {
+    width: 100%;
+    height: auto;
+  }
+
+  .circle-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.8;
+  }
+
+  .circle {
+    fill: none;
+    stroke: #4caf50;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.3s ease;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .stat-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .streak-calendar {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+  }
+
+  .day-marker {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #eee;
+  }
+
+  .day-marker.completed {
+    background: #4caf50;
+  }
+
+  .quote-box {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+  }
+
+  .social-share {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .share-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+  }
+
+  .twitter {
+    background: #000;
+  }
+  .facebook {
+    background: #1877f2;
+  }
+  .linkedin {
+    background: #0077b5;
+  }
+
+  .email-footer {
+    margin-top: 30px;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+  }
+
+  .footer-logo {
+    width: 40px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+</style>

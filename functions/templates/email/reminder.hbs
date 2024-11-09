@@ -1,11 +1,48 @@
-{{!-- templates/email/reminder.hbs --}}
-{{#> default title="Habit Reminder"}}
-  <h2>Hello {{userName}}!</h2>
-  <p>Time to complete your habit:</p>
-  <h3>{{habitName}}</h3>
-  <p>Current streak: {{streak}} days</p>
-  <p>{{customMessage}}</p>
-  <a href="{{actionUrl}}" style="background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-    Mark as Complete
-  </a>
-{{/default}}
+{{!-- templates/reminder.hbs --}}
+{{#> layouts/default}}
+<div class="email-container">
+  <div class="header">
+    <div class="time-indicator">
+      {{#timeOfDay}}
+        {{#if isMorning}}🌅{{else if isEvening}}🌙{{else}}☀️{{/if}}
+      {{/timeOfDay}}
+    </div>
+    <h1>{{timeOfDay}} Habit Check-in</h1>
+  </div>
+
+  <div class="content">
+    <h2>Hello {{userName}}! 👋</h2>
+
+    {{> components/progress-circle streak=streak percentage=streakPercentage}}
+    
+    {{> components/stats-grid 
+      completionRate=completionRate 
+      daysCompleted=daysCompleted 
+      bestStreak=bestStreak
+    }}
+
+    {{> components/habit-card 
+      habitName=habitName 
+      lastSevenDays=lastSevenDays
+    }}
+
+    {{> components/quote-box 
+      quote=motivationalQuote 
+      author=quoteAuthor
+    }}
+
+    {{> components/action-buttons 
+      actionUrl=actionUrl 
+      statsUrl=statsUrl
+    }}
+
+    {{> components/social-share 
+      twitterUrl=twitterShareUrl
+      facebookUrl=facebookShareUrl
+      linkedinUrl=linkedinShareUrl
+    }}
+
+    {{> components/footer logoUrl=logoUrl}}
+  </div>
+</div>
+{{/layouts/default}}

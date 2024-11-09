@@ -46,7 +46,22 @@ function convertFirestoreTimestampToDate(timestamp) {
   return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000)
 }
 
+/**
+ * Returns a greeting based on the time of day.
+ * @param {Object} options - Handlebars options object
+ * @return {string} - The greeting
+ */
+function timeOfDay(options) {
+  const hour = new Date().getHours()
+  const context = {
+    isMorning: hour >= 5 && hour < 12,
+    isEvening: hour >= 18 || hour < 5
+  }
+  return options.fn(context)
+}
+
 module.exports = {
   isDueToday,
-  isCompletedToday
+  isCompletedToday,
+  timeOfDay
 }
