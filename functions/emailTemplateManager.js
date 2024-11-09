@@ -21,8 +21,32 @@ class EmailTemplateManager {
     this.templates = new Map()
     this.cssPath = path.join(__dirname, 'templates/email/styles/components.css')
     this.templateDir = path.join(__dirname, 'templates/email')
+    this.componentsDir = path.join(__dirname, 'templates/email/components')
     this.loadCss()
     this.loadTemplates()
+    this.registerPartials()
+  }
+
+  /**
+   * Register all partials from the components directory.
+   * @memberof EmailTemplateManager
+   * @throws {Error} If the partials cannot be registered.
+   */
+  registerPartials() {
+    try {
+      // Read all files in components directory
+      const componentFiles = fs.readdirSync(this.componentsDir)
+
+      componentFiles.forEach((file) => {
+        if (file.endsWith('.hbs')) {
+          const partialName = 'components/' + path.basename(file, '.hbs')
+          const partialContent = fs.readFileSync(path.join(this.componentsDir, file), 'utf8')
+          handlebars.registerPartial(partialName, partialContent)
+        }
+      })
+    } catch (error) {
+      console.error('Failed to register partials:', error)
+    }
   }
 
   /**
@@ -48,8 +72,13 @@ class EmailTemplateManager {
     const templateFiles = fs.readdirSync(this.templateDir)
     templateFiles.forEach((file) => {
       const templateName = path.basename(file, '.hbs')
-      const templateContent = fs.readFileSync(path.join(this.templateDir, file), 'utf-8')
-      this.templates.set(templateName, handlebars.compile(templateContent))
+      // Make sure we're only reading files, not directories
+      const filePath = path.join(this.templateDir, file)
+      if (fs.statSync(filePath).isFile()) {
+        const templateContent = fs.readFileSync(filePath, 'utf8')
+        // Process your template file content here
+        this.templates.set(templateName, handlebars.compile(templateContent))
+      }
     })
   }
 

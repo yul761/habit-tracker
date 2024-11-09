@@ -101,18 +101,65 @@ async function sendNotifications(notificationType) {
         const message = habit.task
 
         if (user.notifyThroughEmail && user.email) {
-          const emailHtml = templateManager.render('reminder', {
-            userName: user.name || 'there',
-            habitName: habit.task,
-            streak: habit.streak || 0,
-            customMessage:
-              notificationType === 'Morning'
-                ? 'Start your day right!'
-                : notificationType === 'Evening'
-                  ? 'Do not break your streak!'
-                  : 'Keep up the good work!',
-            actionUrl: `www.habithub.com/habits/${habit.id}/complete`
-          })
+          const templateData = {
+            // Time-based greeting
+            timeOfDay: 'Morning', // or "Evening", "Afternoon"
+
+            // User info
+            userName: 'John Doe',
+
+            // Progress metrics
+            streak: 7,
+            streakPercentage: 70,
+
+            // Statistics
+            completionRate: 85,
+            daysCompleted: 30,
+            bestStreak: 14,
+
+            // Habit details
+            habitName: 'Morning Meditation',
+            lastSevenDays: [
+              { completed: true },
+              { completed: true },
+              { completed: false },
+              { completed: true },
+              { completed: true },
+              { completed: true },
+              { completed: false }
+            ],
+
+            // Motivational content
+            motivationalQuote:
+              'Success is not final, failure is not fatal: it is the courage to continue that counts',
+            quoteAuthor: 'Winston Churchill',
+
+            // Action URLs
+            actionUrl: 'https://habithub.com/habits/123/complete',
+            statsUrl: 'https://habithub.com/habits/123/stats',
+
+            // Social sharing
+            twitterShareUrl: 'https://twitter.com/intent/tweet?text=...',
+            facebookShareUrl: 'https://facebook.com/sharer/sharer.php?...',
+            linkedinShareUrl: 'https://www.linkedin.com/sharing/...',
+
+            // Branding
+            logoUrl: 'https://habithub.com/assets/logo.png'
+          }
+
+          // const emailHtml = templateManager.render('reminder', {
+          //   userName: user.name || 'there',
+          //   habitName: habit.task,
+          //   streak: habit.streak || 0,
+          //   customMessage:
+          //     notificationType === 'Morning'
+          //       ? 'Start your day right!'
+          //       : notificationType === 'Evening'
+          //         ? 'Do not break your streak!'
+          //         : 'Keep up the good work!',
+          //   actionUrl: `www.habithub.com/habits/${habit.id}/complete`
+          // })
+          const emailHtml = templateManager.render('reminder', templateData)
 
           notifications.push(
             emailTransporter.sendMail({

@@ -1,0 +1,17 @@
+{{!-- templates/email/components/habit-card.hbs --}}
+<div class="habit-card">
+  <div class="habit-header">
+    <div class="habit-icon">✨</div>
+    <h3 class="habit-name">{{habitName}}</h3>
+  </div>
+  
+  <div class="streak-calendar">
+    {{#each lastSevenDays}}
+      <div class="day-marker {{#if completed}}completed{{/if}}">
+        {{#if completed}}✓{{/if}}
+      </div>
+    {{/each}}
+  </div>
+  
+  <div class="streak-label">Last 7 days</div>
+</div>

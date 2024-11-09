@@ -55,9 +55,17 @@ function timeOfDay(options) {
   const hour = new Date().getHours()
   const context = {
     isMorning: hour >= 5 && hour < 12,
-    isEvening: hour >= 18 || hour < 5
+    isEvening: hour >= 18 || hour < 5,
+    text: hour >= 5 && hour < 12 ? 'Morning' : hour >= 18 || hour < 5 ? 'Evening' : 'Afternoon'
   }
-  return options.fn(context)
+
+  // If used as block helper (for emoji)
+  if (options && options.fn) {
+    return options.fn(context)
+  }
+
+  // If used as regular helper (for text)
+  return context.text
 }
 
 module.exports = {
