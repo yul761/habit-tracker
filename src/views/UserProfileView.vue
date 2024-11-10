@@ -37,7 +37,7 @@
         <button
           type="submit"
           class="btn btn-primary w-100 d-flex justify-content-center align-items-center"
-          :disabled="!isFormModified || !isPhoneNumberValid"
+          :disabled="disableUpdateProfileBtn"
         >
           <span class="updateProfile">Update Profile</span>
           <span class="indicator-container ms-2">
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, reactive } from 'vue'
+import { ref, onMounted, computed, reactive, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { getUserById, updateUser } from '@/firebase/firebase.user.db'
 import PhoneInputs from '@/components/Inputs/PhoneInputs.vue'
@@ -70,7 +70,7 @@ const email = ref('')
 const phoneNumber = ref('')
 const emailUpdates = ref(false)
 const smsUpdates = ref(false)
-const isPhoneNumberValid = ref(false)
+const isPhoneNumberValid = ref(true)
 
 const initialData = reactive({
   displayName: '',
@@ -81,7 +81,6 @@ const initialData = reactive({
 })
 
 const loadUserData = async () => {
-  console.log('Loading user data...', authStore.user)
   if (authStore.user) {
     const user = await getUserById(authStore.user.uid)
     if (user) {
@@ -131,6 +130,10 @@ const isFormModified = computed(() => {
     emailUpdates.value !== initialData.emailUpdates ||
     smsUpdates.value !== initialData.smsUpdates
   )
+})
+
+const disableUpdateProfileBtn = computed(() => {
+  return !isFormModified.value || !isPhoneNumberValid.value
 })
 
 const updateProfile = () => {
