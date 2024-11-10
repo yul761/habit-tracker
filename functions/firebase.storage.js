@@ -1,9 +1,9 @@
 const { getStorage } = require('firebase-admin/storage')
 
 /**
- * Get the URL for the logo image stored in Firebase Storage.
+ * Get a signed URL for a logo stored in Cloud Storage
  * @param {*} logoName
- * @returns
+ * @return {string} - The signed URL
  */
 async function getLogoUrl(logoName) {
   const storage = getStorage()

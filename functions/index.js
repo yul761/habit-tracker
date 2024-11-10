@@ -11,7 +11,13 @@ const { getFirestore } = require('firebase-admin/firestore')
 const admin = require('firebase-admin')
 const nodemailer = require('nodemailer')
 const twilio = require('twilio')
-const { isDueToday, isCompletedToday } = require('./utils')
+const quotes = require('success-motivational-quotes')
+const {
+  isDueToday,
+  isCompletedToday,
+  getCompletionPercentage,
+  getLastSevenDaysCompletion
+} = require('./utils')
 const templateManager = require('./emailTemplateManager')
 const { getLogoUrl } = require('./firebase.storage')
 
@@ -81,7 +87,6 @@ async function sendNotifications(notificationType) {
     })
 
     const notifications = []
-
     for (const user of users.values()) {
       // if user.habits is an array with document reference, get the actual data of habits
       const habits = await Promise.all(
@@ -115,39 +120,30 @@ async function sendNotifications(notificationType) {
 
         if (user.notifyThroughEmail && user.email) {
           const brandingLogo = await getLogoUrl('favcon-no-background.png')
-          console.log(brandingLogo)
+          const userName = user.displayName || user.email.split('@')[0]
+          const todayQuote = quotes.getTodaysQuote()
           const templateData = {
             // Time-based greeting
-            timeOfDay: 'Morning', // or "Evening", "Afternoon"
+            timeOfDay: notificationType, // 'Morning' or "Evening", "Afternoon"
 
             // User info
-            userName: user.displayName ?? user.email.split('@')[0],
+            userName: userName,
 
             // Progress metrics
-            streak: 7,
-            streakPercentage: 70,
+            streak: habit.streak,
 
             // Statistics
-            completionRate: 85,
-            daysCompleted: 30,
-            bestStreak: 14,
+            completionRate: getCompletionPercentage(habit),
+            daysCompleted: habit.completionLog?.length || 0,
+            bestStreak: habit.longestStreak,
 
             // Habit details
             habitName: habit.task,
-            lastSevenDays: [
-              { completed: true },
-              { completed: true },
-              { completed: false },
-              { completed: true },
-              { completed: true },
-              { completed: true },
-              { completed: false }
-            ],
+            lastSevenDays: getLastSevenDaysCompletion(habit.completionLog),
 
             // Motivational content
-            motivationalQuote:
-              'Success is not final, failure is not fatal: it is the courage to continue that counts',
-            quoteAuthor: 'Winston Churchill',
+            motivationalQuote: todayQuote.body,
+            quoteAuthor: todayQuote.by,
 
             // Action URLs
             actionUrl: 'https://habithub.com/habits/123/complete',
@@ -162,18 +158,6 @@ async function sendNotifications(notificationType) {
             logoUrl: brandingLogo
           }
 
-          // const emailHtml = templateManager.render('reminder', {
-          //   userName: user.name || 'there',
-          //   habitName: habit.task,
-          //   streak: habit.streak || 0,
-          //   customMessage:
-          //     notificationType === 'Morning'
-          //       ? 'Start your day right!'
-          //       : notificationType === 'Evening'
-          //         ? 'Do not break your streak!'
-          //         : 'Keep up the good work!',
-          //   actionUrl: `www.habithub.com/habits/${habit.id}/complete`
-          // })
           const emailHtml = templateManager.render('reminder', templateData)
 
           notifications.push(
