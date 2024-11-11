@@ -11,6 +11,13 @@ async function getLogoUrl(logoName) {
   const file = bucket.file(logoName)
 
   try {
+    // Add file existence check
+    const [exists] = await file.exists()
+    if (!exists) {
+      console.warn(`Logo file ${logoName} not found`)
+      return null
+    }
+
     const [signedUrl] = await file.getSignedUrl({
       version: 'v4',
       action: 'read',
@@ -20,7 +27,7 @@ async function getLogoUrl(logoName) {
     return signedUrl
   } catch (error) {
     console.error('Error getting logo URL:', error)
-    throw error
+    return null
   }
 }
 

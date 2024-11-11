@@ -53,6 +53,7 @@ function convertFirestoreTimestampToDate(timestamp) {
  */
 function timeOfDay(options) {
   const hour = new Date().getHours()
+  console.log('time of day ', hour)
   const context = {
     isMorning: hour >= 5 && hour < 12,
     isEvening: hour >= 18 || hour < 5,

@@ -45,8 +45,24 @@ if (process.env.NODE_ENV !== 'production') {
     storageBucket: STORAGE_BUCKET
   })
 } else {
+  const serviceAccountParams = {
+    type: process.env.SERVICE_ACCOUNT_TYPE,
+    project_id: process.env.SERVICE_ACCOUNT_PROJECT_ID,
+    private_key_id: process.env.SERVICE_ACCOUNT_PRIVATE_KEY_ID,
+    private_key: process.env.SERVICE_ACCOUNT_PRIVATE_KEY,
+    client_email: process.env.SERVICE_ACCOUNT_CLIENT_EMAIL,
+    client_id: process.env.SERVICE_ACCOUNT_CLIENT_ID,
+    auth_uri: process.env.SERVICE_ACCOUNT_AUTH_URI,
+    token_uri: process.env.SERVICE_ACCOUNT_TOKEN_URI,
+    auth_provider_x509_cert_url: process.env.SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL,
+    client_x509_cert_url: process.env.SERVICE_ACCOUNT_CLIENT_CERT_URL,
+    universe_domain: process.env.SERVICE_ACCOUNT_UNIVERSE_DOMAIN
+  }
   // For production, uses environment credentials
-  initializeApp()
+  initializeApp({
+    credential: admin.credential.cert(serviceAccountParams),
+    storageBucket: STORAGE_BUCKET
+  })
 }
 
 // Email configuration
@@ -65,6 +81,16 @@ const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
  * @param {string} notificationType
  */
 async function sendNotifications(notificationType) {
+  console.log(`Starting ${notificationType} notifications`)
+
+  if (!EMAIL_USER || !EMAIL_APP_PASSWORD) {
+    throw new Error('Email configuration missing')
+  }
+
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+    throw new Error('Twilio configuration missing')
+  }
+
   const db = getFirestore()
 
   try {
@@ -119,7 +145,14 @@ async function sendNotifications(notificationType) {
         const message = habit.task
 
         if (user.notifyThroughEmail && user.email) {
-          const brandingLogo = await getLogoUrl('favcon-no-background.png')
+          // const brandingLogo = await getLogoUrl('favcon-no-background.png')
+          let brandingLogo
+          try {
+            brandingLogo = await getLogoUrl('favcon-no-background.png')
+          } catch (error) {
+            console.warn('Failed to get logo URL, continuing without logo')
+            brandingLogo = null
+          }
           const userName = user.displayName || user.email.split('@')[0]
           const todayQuote = quotes.getTodaysQuote()
           const templateData = {
@@ -199,7 +232,7 @@ exports.morningNotification = onSchedule(
     timeZone: 'America/New_York',
     maxInstances: 1,
     retryConfig: {
-      retryCount: 3
+      retryCount: 4
     },
     labels: {
       type: 'notification',
@@ -207,7 +240,23 @@ exports.morningNotification = onSchedule(
     }
   },
   async (event) => {
-    return sendNotifications('Morning')
+    try {
+      // Add detailed logging
+      console.log('Starting Morning notification process')
+      console.log('Environment check:', {
+        hasEmailConfig: !!EMAIL_USER && !!EMAIL_APP_PASSWORD,
+        hasTwilioConfig: !!TWILIO_ACCOUNT_SID && !!TWILIO_AUTH_TOKEN,
+        hasStorageConfig: !!STORAGE_BUCKET
+      })
+
+      const result = await sendNotifications('Morning')
+      console.log('Morning notification completed successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Morning notification failed:', error)
+      // Re-throw to trigger retry
+      throw error
+    }
   }
 )
 
@@ -217,7 +266,7 @@ exports.afternoonNotification = onSchedule(
     timeZone: 'America/New_York',
     maxInstances: 1,
     retryConfig: {
-      retryCount: 3
+      retryCount: 4
     },
     labels: {
       type: 'notification',
@@ -225,7 +274,23 @@ exports.afternoonNotification = onSchedule(
     }
   },
   async (event) => {
-    return sendNotifications('Afternoon')
+    try {
+      // Add detailed logging
+      console.log('Starting afternoon notification process')
+      console.log('Environment check:', {
+        hasEmailConfig: !!EMAIL_USER && !!EMAIL_APP_PASSWORD,
+        hasTwilioConfig: !!TWILIO_ACCOUNT_SID && !!TWILIO_AUTH_TOKEN,
+        hasStorageConfig: !!STORAGE_BUCKET
+      })
+
+      const result = await sendNotifications('Afternoon')
+      console.log('Afternoon notification completed successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Afternoon notification failed:', error)
+      // Re-throw to trigger retry
+      throw error
+    }
   }
 )
 
@@ -235,7 +300,7 @@ exports.eveningNotification = onSchedule(
     timeZone: 'America/New_York',
     maxInstances: 1,
     retryConfig: {
-      retryCount: 3
+      retryCount: 4
     },
     labels: {
       type: 'notification',
@@ -243,7 +308,23 @@ exports.eveningNotification = onSchedule(
     }
   },
   async (event) => {
-    return sendNotifications('Evening')
+    try {
+      // Add detailed logging
+      console.log('Starting evening notification process')
+      console.log('Environment check:', {
+        hasEmailConfig: !!EMAIL_USER && !!EMAIL_APP_PASSWORD,
+        hasTwilioConfig: !!TWILIO_ACCOUNT_SID && !!TWILIO_AUTH_TOKEN,
+        hasStorageConfig: !!STORAGE_BUCKET
+      })
+
+      const result = await sendNotifications('Evening')
+      console.log('Evening notification completed successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Evening notification failed:', error)
+      // Re-throw to trigger retry
+      throw error
+    }
   }
 )
 
