@@ -7,7 +7,7 @@
         {{#if isMorning}}🌅{{else if isEvening}}🌙{{else}}☀️{{/if}}
       {{/timeOfDay}}
     </div>
-    <h1>{{timeOfDay}} Habit Check-in</h1>
+    <h1>Habit Hub Check-in</h1>
   </div>
 
   <div class="content">
@@ -15,15 +15,15 @@
 
     {{> components/progress-circle streak=streak}}
     
+    {{> components/habit-card 
+      habitName=habitName 
+      lastSevenDays=lastSevenDays
+    }}
+
     {{> components/stats-grid 
       completionRate=completionRate 
       daysCompleted=daysCompleted 
       bestStreak=bestStreak
-    }}
-
-    {{> components/habit-card 
-      habitName=habitName 
-      lastSevenDays=lastSevenDays
     }}
 
     {{> components/quote-box 

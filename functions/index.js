@@ -229,7 +229,7 @@ async function sendNotifications(notificationType) {
 exports.morningNotification = onSchedule(
   {
     schedule: '0 9 * * *',
-    timeZone: 'America/New_York',
+    timeZone: 'UTC',
     maxInstances: 1,
     retryConfig: {
       retryCount: 4
@@ -263,7 +263,7 @@ exports.morningNotification = onSchedule(
 exports.afternoonNotification = onSchedule(
   {
     schedule: '0 13 * * *',
-    timeZone: 'America/New_York',
+    timeZone: 'UTC',
     maxInstances: 1,
     retryConfig: {
       retryCount: 4
@@ -297,7 +297,7 @@ exports.afternoonNotification = onSchedule(
 exports.eveningNotification = onSchedule(
   {
     schedule: '0 18 * * *',
-    timeZone: 'America/New_York',
+    timeZone: 'UTC',
     maxInstances: 1,
     retryConfig: {
       retryCount: 4
