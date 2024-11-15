@@ -1,0 +1,27 @@
+{{!-- templates/registration.hbs --}}
+{{#> layouts/default}}
+<div class="email-container">
+  <div style="text-align: center; padding: 20px;">
+    <img src='{{logoUrl}}' alt='HabitHub' class='header-logo' style="width: 200px; height: auto; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" />
+    <h1 style="width: 400px; margin: 0 auto; font-size: 24px; color: #333333;">Welcome to Habit Hub!</h1>
+  </div>
+
+  <div class="content" style="text-align: center;">
+    <h2>Hello {{userName}}! 👋</h2>
+    
+    <div class="message-box" style="text-align: center; max-width: 600px; margin: 0 auto;">
+      <p>Thank you for joining Habit Hub. Your account has been successfully created.</p>
+      <p>You can now start tracking your habits and building a better you!</p>
+    </div>
+
+    {{> components/button
+      text="Get Started"
+      url=loginUrl
+    }}
+
+    <div class="help-text" style="text-align: center; margin-top: 20px;">
+      <p>If you didn't create this account, please contact our support team immediately.</p>
+    </div>
+  </div>
+</div>
+{{/layouts/default}}

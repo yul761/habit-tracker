@@ -225,6 +225,73 @@ async function sendNotifications(notificationType) {
   }
 }
 
+/** Send a welcome email to a new user
+ * @param {string} userEmail
+ * @param {string} userName
+ * @return {Promise<{success: boolean}>}
+ */
+async function sendRegistrationEmail(userEmail, userName) {
+  try {
+    const templateData = {
+      userName: userName || userEmail.split('@')[0],
+      loginUrl: 'https://habithub.com/login',
+      logoUrl: await getLogoUrl('logo-no-background.png')
+    }
+
+    const emailHtml = templateManager.render('registration', templateData)
+
+    await emailTransporter.sendMail({
+      from: EMAIL_USER,
+      to: userEmail,
+      subject: 'Welcome to HabitHub!',
+      html: emailHtml,
+      text: `Welcome to HabitHub! Thank you for joining. You can now start tracking your habits at https://habithub.com/login`
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error sending registration email:', error)
+    throw error
+  }
+}
+
+/** Send a password reset email to a user
+ * @param {string} userEmail
+ * @param {string} resetToken
+ * @return {Promise<{success: boolean}>}
+ * */
+
+async function sendPasswordResetEmail(userEmail, resetToken) {
+  try {
+    const templateData = {
+      userName: userEmail.split('@')[0],
+      resetUrl: `https://habithub.com/reset-password?token=${resetToken}`,
+      logoUrl: await getLogoUrl('logo-no-background.png')
+    }
+
+    const emailHtml = templateManager.render('password-reset', templateData) // Changed from passwordReset
+
+    await emailTransporter.sendMail({
+      from: EMAIL_USER,
+      to: userEmail,
+      subject: 'Reset Your Password - HabitHub',
+      html: emailHtml,
+      text: `Hello ${templateData.userName}!
+
+We received a request to reset your Habit Hub password.
+To create a new password, click here: ${templateData.resetUrl}
+This link will expire in 1 hour.
+
+If you didn't request a password reset, you can safely ignore this email.
+Your password will remain unchanged.`
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error sending password reset email:', error)
+    throw error
+  }
+}
 // Scheduled functions
 exports.morningNotification = onSchedule(
   {
@@ -345,6 +412,42 @@ exports.triggerNotification = onRequest(
   }
 )
 
+// HTTP endpoints for user management
+exports.sendWelcomeEmail = onRequest(
+  {
+    cors: true,
+    maxInstances: 10
+  },
+  async (req, res) => {
+    try {
+      // const { email, name } = req.body
+      const email = 'kloselyc@gmail.com'
+      const name = 'Test User'
+      const result = await sendRegistrationEmail(email, name)
+      res.json(result)
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  }
+)
+
+exports.sendPasswordReset = onRequest(
+  {
+    cors: true,
+    maxInstances: 10
+  },
+  async (req, res) => {
+    try {
+      // const { email, token } = req.body
+      const email = 'kloselyc@gmail.com'
+      const token = 'Test User'
+      const result = await sendPasswordResetEmail(email, token)
+      res.json(result)
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  }
+)
 // Callable function for Vue frontend
 exports.triggerNotificationFromClient = onCall(
   {
