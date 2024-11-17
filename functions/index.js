@@ -7,7 +7,14 @@ const { onSchedule } = require('firebase-functions/v2/scheduler')
 const { onRequest, onCall } = require('firebase-functions/v2/https')
 const { defineString } = require('firebase-functions/params')
 const { initializeApp } = require('firebase-admin/app')
-const { getFirestore } = require('firebase-admin/firestore')
+const {
+  getFirestore,
+  Timestamp,
+  FieldValue,
+  addDoc,
+  arrayUnion,
+  updateDoc
+} = require('firebase-admin/firestore')
 const admin = require('firebase-admin')
 const nodemailer = require('nodemailer')
 const twilio = require('twilio')
@@ -20,6 +27,7 @@ const {
 } = require('./utils')
 const templateManager = require('./emailTemplateManager')
 const { getLogoUrl } = require('./firebase.storage')
+const { verifyToken, generateHabitCompletionToken } = require('./tokenManager')
 
 // Define environment parameters for production
 const emailUser = defineString('EMAIL_USER')
@@ -118,14 +126,20 @@ async function sendNotifications(notificationType) {
       const habits = await Promise.all(
         user.habits.map(async (habitRef) => {
           const doc = await habitRef.get()
-          const habitData = doc.data()
+          const habitData = {
+            id: doc.id,
+            ...doc.data()
+          }
 
           // Get the completeLogs data if completionLog is not null
           if (Array.isArray(habitData.completionLog) && habitData.completionLog.length > 0) {
             habitData.completionLog = await Promise.all(
               habitData.completionLog.map(async (logRef) => {
                 const logDoc = await logRef.get()
-                return logDoc.data()
+                return {
+                  id: logDoc.id,
+                  ...logDoc.data()
+                }
               })
             )
           }
@@ -153,6 +167,8 @@ async function sendNotifications(notificationType) {
             console.warn('Failed to get logo URL, continuing without logo')
             brandingLogo = null
           }
+          console.log(habit)
+          const completionToken = generateHabitCompletionToken(habit.userId, habit.id)
           const userName = user.displayName || user.email.split('@')[0]
           const todayQuote = quotes.getTodaysQuote()
           const templateData = {
@@ -179,7 +195,7 @@ async function sendNotifications(notificationType) {
             quoteAuthor: todayQuote.by,
 
             // Action URLs
-            actionUrl: 'https://habithub.com/habits/123/complete',
+            actionUrl: `http://127.0.0.1:5001/habit-tracker-a6b59/us-central1/completeHabit?token=${completionToken}`,
             statsUrl: 'https://habithub.com/habits/123/stats',
 
             // Social sharing
@@ -463,3 +479,152 @@ exports.triggerNotificationFromClient = onCall(
     }
   }
 )
+
+exports.completeHabit = onRequest(async (req, res) => {
+  const token = req.query.token
+
+  if (!token) {
+    return res.status(400).send('Missing token')
+  }
+
+  const decoded = verifyToken(token)
+  if (!decoded) {
+    return res.status(400).send('Invalid or expired token')
+  }
+
+  const db = admin.firestore()
+  const batch = db.batch()
+  try {
+    const habitRef = db
+      .collection('user')
+      .doc(decoded.userId)
+      .collection('habits')
+      .doc(decoded.habitId)
+
+    // Check for existing completion today
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    const existingCompletion = await habitRef
+      .collection('completionLogs')
+      .where('Date', '>=', Timestamp.fromDate(today))
+      .where('Date', '<', Timestamp.fromDate(tomorrow))
+      .get()
+
+    if (!existingCompletion.empty) {
+      return res.status(400).send(`
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+              }
+              .message {
+                padding: 20px;
+                border-radius: 5px;
+                text-align: center;
+              }
+              .warning {
+                background-color: #fff3e0;
+                color: #ef6c00;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="message warning">
+              Habit already completed for today
+            </div>
+          </body>
+        </html>
+      `)
+    }
+
+    const completionLogRef = habitRef.collection('completionLogs').doc()
+
+    const completionLog = {
+      Date: Timestamp.fromDate(new Date()),
+      notes: ''
+    }
+
+    batch.set(completionLogRef, completionLog)
+
+    batch.update(habitRef, {
+      completionLog: FieldValue.arrayUnion(completionLogRef),
+      streak: FieldValue.increment(1)
+    })
+
+    await batch.commit()
+    console.log('Batch committed successfully')
+
+    // Send HTML response instead of redirect
+    res.send(`
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              margin: 0;
+            }
+            .message {
+              padding: 20px;
+              border-radius: 5px;
+              text-align: center;
+            }
+            .success {
+              background-color: #e8f5e9;
+              color: #2e7d32;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="message success">
+            Habit completed successfully!
+          </div>
+        </body>
+      </html>
+    `)
+  } catch (error) {
+    console.error('Completion error:', error)
+    res.status(500).send(`
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              margin: 0;
+            }
+            .message {
+              padding: 20px;
+              border-radius: 5px;
+              text-align: center;
+            }
+            .error {
+              background-color: #ffebee;
+              color: #c62828;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="message error">
+            Failed to mark habit complete
+          </div>
+        </body>
+      </html>
+    `)
+  }
+})
