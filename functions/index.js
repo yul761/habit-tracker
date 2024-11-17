@@ -7,14 +7,7 @@ const { onSchedule } = require('firebase-functions/v2/scheduler')
 const { onRequest, onCall } = require('firebase-functions/v2/https')
 const { defineString } = require('firebase-functions/params')
 const { initializeApp } = require('firebase-admin/app')
-const {
-  getFirestore,
-  Timestamp,
-  FieldValue,
-  addDoc,
-  arrayUnion,
-  updateDoc
-} = require('firebase-admin/firestore')
+const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore')
 const admin = require('firebase-admin')
 const nodemailer = require('nodemailer')
 const twilio = require('twilio')
@@ -195,7 +188,7 @@ async function sendNotifications(notificationType) {
             quoteAuthor: todayQuote.by,
 
             // Action URLs
-            actionUrl: `http://127.0.0.1:5001/habit-tracker-a6b59/us-central1/completeHabit?token=${completionToken}`,
+            actionUrl: `https://us-central1-habit-tracker-a6b59.cloudfunctions.net/completeHabit?token=${completionToken}`,
             statsUrl: 'https://habithub.com/habits/123/stats',
 
             // Social sharing
@@ -276,7 +269,6 @@ async function sendRegistrationEmail(userEmail, userName) {
  * @param {string} resetToken
  * @return {Promise<{success: boolean}>}
  * */
-
 async function sendPasswordResetEmail(userEmail, resetToken) {
   try {
     const templateData = {
@@ -285,7 +277,7 @@ async function sendPasswordResetEmail(userEmail, resetToken) {
       logoUrl: await getLogoUrl('logo-no-background.png')
     }
 
-    const emailHtml = templateManager.render('password-reset', templateData) // Changed from passwordReset
+    const emailHtml = templateManager.render('password-reset', templateData)
 
     await emailTransporter.sendMail({
       from: EMAIL_USER,
