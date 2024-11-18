@@ -189,7 +189,6 @@ async function sendNotifications(notificationType) {
 
             // Action URLs
             actionUrl: `https://us-central1-habit-tracker-a6b59.cloudfunctions.net/completeHabit?token=${completionToken}`,
-            statsUrl: 'https://habithub.com/habits/123/stats',
 
             // Social sharing
             twitterShareUrl: 'https://twitter.com/intent/tweet?text=...',
@@ -264,42 +263,6 @@ async function sendRegistrationEmail(userEmail, userName) {
   }
 }
 
-/** Send a password reset email to a user
- * @param {string} userEmail
- * @param {string} resetToken
- * @return {Promise<{success: boolean}>}
- * */
-async function sendPasswordResetEmail(userEmail, resetToken) {
-  try {
-    const templateData = {
-      userName: userEmail.split('@')[0],
-      resetUrl: `https://habithub.com/reset-password?token=${resetToken}`,
-      logoUrl: await getLogoUrl('logo-no-background.png')
-    }
-
-    const emailHtml = templateManager.render('password-reset', templateData)
-
-    await emailTransporter.sendMail({
-      from: EMAIL_USER,
-      to: userEmail,
-      subject: 'Reset Your Password - HabitHub',
-      html: emailHtml,
-      text: `Hello ${templateData.userName}!
-
-We received a request to reset your Habit Hub password.
-To create a new password, click here: ${templateData.resetUrl}
-This link will expire in 1 hour.
-
-If you didn't request a password reset, you can safely ignore this email.
-Your password will remain unchanged.`
-    })
-
-    return { success: true }
-  } catch (error) {
-    console.error('Error sending password reset email:', error)
-    throw error
-  }
-}
 // Scheduled functions
 exports.morningNotification = onSchedule(
   {
