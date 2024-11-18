@@ -400,21 +400,6 @@ exports.sendWelcomeEmail = onRequest(
   }
 )
 
-exports.sendPasswordReset = onRequest(
-  {
-    cors: true,
-    maxInstances: 10
-  },
-  async (req, res) => {
-    try {
-      const { email, token } = req.body
-      const result = await sendPasswordResetEmail(email, token)
-      res.json(result)
-    } catch (error) {
-      res.status(500).json({ error: error.message })
-    }
-  }
-)
 // Callable function for Vue frontend
 exports.triggerNotificationFromClient = onCall(
   {
