@@ -13,6 +13,7 @@ import {
 } from 'firebase/auth'
 import router from '@/router'
 import { userExists, addUser } from '@/firebase/firebase.user.db'
+import { sendWelcomeEmail } from '@/api/firebase.functions'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -51,6 +52,9 @@ export const useAuthStore = defineStore('auth', {
               phoneNumber: '',
               notifyThroughSms: false
             })
+            if (this.user.email && this.user.displayName) {
+              await sendWelcomeEmail(this.user.email, this.user.displayName)
+            }
           }
           router.push('/')
         })
@@ -86,6 +90,9 @@ export const useAuthStore = defineStore('auth', {
             phoneNumber: '',
             notifyThroughSms: false
           })
+          if (this.user.email && this.user.displayName) {
+            await sendWelcomeEmail(this.user.email, this.user.displayName)
+          }
         }
       } catch (error) {
         console.error('Error during sign-in:', error)

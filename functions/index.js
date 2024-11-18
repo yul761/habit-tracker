@@ -428,9 +428,7 @@ exports.sendWelcomeEmail = onRequest(
   },
   async (req, res) => {
     try {
-      // const { email, name } = req.body
-      const email = 'kloselyc@gmail.com'
-      const name = 'Test User'
+      const { email, name } = req.body
       const result = await sendRegistrationEmail(email, name)
       res.json(result)
     } catch (error) {
@@ -446,9 +444,7 @@ exports.sendPasswordReset = onRequest(
   },
   async (req, res) => {
     try {
-      // const { email, token } = req.body
-      const email = 'kloselyc@gmail.com'
-      const token = 'Test User'
+      const { email, token } = req.body
       const result = await sendPasswordResetEmail(email, token)
       res.json(result)
     } catch (error) {

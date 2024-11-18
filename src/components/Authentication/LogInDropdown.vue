@@ -43,6 +43,7 @@
             ></span>
           </button>
           <router-link class="btn btn-link" to="/signup">Don't have an account?</router-link>
+          <router-link class="btn btn-link" to="/passwordReset">Forget your password?</router-link>
         </form>
       </li>
       <li><hr class="dropdown-divider" /></li>
