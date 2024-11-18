@@ -3,7 +3,7 @@
     <template #left>
       <img
         alt="Vue logo"
-        class="logo clickable"
+        class="logo clickable h-100"
         src="@/assets/logo-no-background.png"
         height="50"
         @click="() => router.push('/')"

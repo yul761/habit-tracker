@@ -1,7 +1,7 @@
 <template>
   <header class="navbar navbar-expand-lg navbar-light bg-light fixed-top w-100 custom-header">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-      <div class="navbar-brand">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100">
+      <div class="navbar-brand h-100">
         <slot name="left"></slot>
       </div>
       <div class="d-flex justify-content-center flex-grow-1">
@@ -20,7 +20,7 @@
 
 <style scoped>
 .custom-header {
-  height: 50px;
+  height: 55px;
   padding: 0.5rem 1rem; /* Adjust padding to make the header smaller */
   font-size: 0.875rem; /* Optional: Adjust font size if needed */
 }
