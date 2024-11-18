@@ -61,20 +61,16 @@ export const useAuthStore = defineStore('auth', {
       })
     },
     async createUserWithEmailAndPassword(email: string, password: string) {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-        this.user = userCredential.user
-        await addUser(this.user.uid, {
-          displayName: this.user.displayName,
-          email: this.user.email,
-          notifyThroughEmail: false,
-          phoneNumber: '',
-          notifyThroughSms: false
-        })
-        router.push('/')
-      } catch (error) {
-        console.error('Error during sign-up:', error)
-      }
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      this.user = userCredential.user
+      await addUser(this.user.uid, {
+        displayName: this.user.displayName,
+        email: this.user.email,
+        notifyThroughEmail: false,
+        phoneNumber: '',
+        notifyThroughSms: false
+      })
+      router.push('/')
     },
     async signInWithEmailAndPassword(email: string, password: string) {
       try {

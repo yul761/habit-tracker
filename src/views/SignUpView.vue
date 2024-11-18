@@ -2,6 +2,16 @@
   <div class="signup-container">
     <div class="signup">
       <h1>Sign Up</h1>
+      <!-- Error Alert -->
+      <div v-if="signupError" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ signupError }}
+        <button
+          type="button"
+          class="btn-close"
+          @click="signupError = ''"
+          aria-label="Close"
+        ></button>
+      </div>
       <form @submit.prevent="handleSignUp">
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
@@ -67,6 +77,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { FirebaseError } from 'firebase/app'
 
 const authStore = useAuthStore()
 const email = ref('')
@@ -77,6 +88,7 @@ const loading = ref(false)
 const emailError = ref('')
 const passwordError = ref('')
 const confirmPasswordError = ref('')
+const signupError = ref('')
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
@@ -85,6 +97,7 @@ const handleSignUp = async () => {
   emailError.value = ''
   passwordError.value = ''
   confirmPasswordError.value = ''
+  signupError.value = ''
 
   if (!emailPattern.test(email.value)) {
     emailError.value = 'Please enter a valid email address.'
@@ -107,7 +120,26 @@ const handleSignUp = async () => {
     await authStore.createUserWithEmailAndPassword(email.value, password.value)
     // Handle successful sign-up logic here
   } catch (error) {
-    // Handle error here
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          signupError.value = 'This email is already registered.'
+          break
+        case 'auth/invalid-email':
+          signupError.value = 'Invalid email address.'
+          break
+        case 'auth/operation-not-allowed':
+          signupError.value = 'Email/password accounts are not enabled. Please contact support.'
+          break
+        case 'auth/weak-password':
+          signupError.value = 'Password is too weak. Please choose a stronger password.'
+          break
+        default:
+          signupError.value = 'Failed to create account. Please try again.'
+      }
+    } else {
+      signupError.value = 'An unexpected error occurred. Please try again.'
+    }
     console.error(error)
   } finally {
     loading.value = false
@@ -245,5 +277,48 @@ const passwordMatchText = computed(() => {
 .password-match-text {
   font-size: 0.875rem;
   margin-top: 0.25rem;
+}
+
+.alert {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  position: relative;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.alert-dismissible {
+  padding-right: 4rem;
+}
+
+.btn-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1.25rem 1rem;
+  background: transparent;
+  border: 0;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.btn-close:hover {
+  opacity: 0.75;
+}
+
+/* Animation */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
