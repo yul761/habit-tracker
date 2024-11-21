@@ -160,7 +160,6 @@ async function sendNotifications(notificationType) {
             console.warn('Failed to get logo URL, continuing without logo')
             brandingLogo = null
           }
-          console.log(habit)
           const completionToken = generateHabitCompletionToken(habit.userId, habit.id)
           const userName = user.displayName || user.email.split('@')[0]
           const todayQuote = quotes.getTodaysQuote()
@@ -190,11 +189,6 @@ async function sendNotifications(notificationType) {
             // Action URLs
             actionUrl: `https://us-central1-habit-tracker-a6b59.cloudfunctions.net/completeHabit?token=${completionToken}`,
 
-            // Social sharing
-            twitterShareUrl: 'https://twitter.com/intent/tweet?text=...',
-            facebookShareUrl: 'https://facebook.com/sharer/sharer.php?...',
-            linkedinShareUrl: 'https://www.linkedin.com/sharing/...',
-
             // Branding
             logoUrl: brandingLogo
           }
@@ -205,7 +199,7 @@ async function sendNotifications(notificationType) {
             emailTransporter.sendMail({
               from: EMAIL_USER,
               to: user.email,
-              subject: `${notificationType} Habit Reminder: ${habit.task}`,
+              subject: `Habit Hub Reminder: ${habit.task}`,
               html: emailHtml,
               text: `Time to complete your habit: ${habit.task}`
             })
@@ -242,7 +236,7 @@ async function sendRegistrationEmail(userEmail, userName) {
   try {
     const templateData = {
       userName: userName || userEmail.split('@')[0],
-      loginUrl: 'https://habithub.com/login',
+      loginUrl: 'https://habit-hub.ca',
       logoUrl: await getLogoUrl('logo-no-background.png')
     }
 
@@ -253,7 +247,7 @@ async function sendRegistrationEmail(userEmail, userName) {
       to: userEmail,
       subject: 'Welcome to HabitHub!',
       html: emailHtml,
-      text: `Welcome to HabitHub! Thank you for joining. You can now start tracking your habits at https://habithub.com/login`
+      text: `Welcome to HabitHub! Thank you for joining. You can now start tracking your habits at https://habit-hub.ca`
     })
 
     return { success: true }
@@ -281,11 +275,6 @@ exports.morningNotification = onSchedule(
     try {
       // Add detailed logging
       console.log('Starting Morning notification process')
-      console.log('Environment check:', {
-        hasEmailConfig: !!EMAIL_USER && !!EMAIL_APP_PASSWORD,
-        hasTwilioConfig: !!TWILIO_ACCOUNT_SID && !!TWILIO_AUTH_TOKEN,
-        hasStorageConfig: !!STORAGE_BUCKET
-      })
 
       const result = await sendNotifications('Morning')
       console.log('Morning notification completed successfully:', result)
@@ -564,3 +553,76 @@ exports.completeHabit = onRequest(async (req, res) => {
     `)
   }
 })
+
+exports.checkAndResetStreaks = onSchedule(
+  {
+    schedule: '1 0 * * *', // Run at 00:01 UTC every day
+    timeZone: 'UTC',
+    maxInstances: 1,
+    retryConfig: {
+      retryCount: 3
+    },
+    labels: {
+      type: 'streak-reset',
+      time: 'daily'
+    }
+  },
+  async (event) => {
+    console.log('Starting daily streak reset check')
+    const db = getFirestore()
+    let batch = db.batch()
+    let updatedCount = 0
+
+    try {
+      // Get all users
+      const usersSnapshot = await db.collection('user').get()
+
+      // Get yesterday's date range
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
+      yesterday.setHours(0, 0, 0, 0)
+      const todayStart = new Date(yesterday)
+      todayStart.setDate(todayStart.getDate() + 1)
+
+      for (const userDoc of usersSnapshot.docs) {
+        // Get all habits for each user
+        const habitsSnapshot = await userDoc.ref.collection('habits').get()
+
+        for (const habitDoc of habitsSnapshot.docs) {
+          const habit = habitDoc.data()
+
+          // Check completion logs for yesterday
+          const completionLogsSnapshot = await habitDoc.ref
+            .collection('completionLogs')
+            .where('Date', '>=', Timestamp.fromDate(yesterday))
+            .where('Date', '<', Timestamp.fromDate(todayStart))
+            .get()
+
+          // If habit was due yesterday and has no completion, reset streak
+          if (isDueToday(habit) && completionLogsSnapshot.empty) {
+            batch.update(habitDoc.ref, { streak: 0 })
+            updatedCount++
+          }
+
+          // Commit batch every 500 operations to avoid hitting limits
+          if (updatedCount > 0 && updatedCount % 500 === 0) {
+            await batch.commit()
+            batch = db.batch()
+          }
+        }
+      }
+
+      // Commit batch every 20 operations
+      if (updatedCount > 0 && updatedCount % 20 === 0) {
+        await batch.commit()
+        batch = db.batch()
+      }
+
+      console.log(`Successfully reset streaks for ${updatedCount} habits`)
+      return { success: true, resetsPerformed: updatedCount }
+    } catch (error) {
+      console.error('Error in streak reset job:', error)
+      throw error
+    }
+  }
+)

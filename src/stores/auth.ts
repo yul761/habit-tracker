@@ -52,7 +52,7 @@ export const useAuthStore = defineStore('auth', {
               phoneNumber: '',
               notifyThroughSms: false
             })
-            if (this.user.email && this.user.displayName) {
+            if (this.user.email) {
               await sendWelcomeEmail(this.user.email, this.user.displayName)
             }
           }
@@ -70,6 +70,9 @@ export const useAuthStore = defineStore('auth', {
         phoneNumber: '',
         notifyThroughSms: false
       })
+      if (this.user.email) {
+        await sendWelcomeEmail(this.user.email, this.user.displayName)
+      }
       router.push('/')
     },
     async signInWithEmailAndPassword(email: string, password: string) {
@@ -86,7 +89,7 @@ export const useAuthStore = defineStore('auth', {
             phoneNumber: '',
             notifyThroughSms: false
           })
-          if (this.user.email && this.user.displayName) {
+          if (this.user.email) {
             await sendWelcomeEmail(this.user.email, this.user.displayName)
           }
         }

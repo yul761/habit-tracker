@@ -1,4 +1,4 @@
-async function sendWelcomeEmail(email: string, name: string) {
+async function sendWelcomeEmail(email: string, name: string | null) {
   const functionUrl = 'https://us-central1-habit-tracker-a6b59.cloudfunctions.net/sendWelcomeEmail'
 
   try {
