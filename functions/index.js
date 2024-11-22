@@ -68,10 +68,15 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Email configuration
 const emailTransporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.office365.com', // Microsoft 365 SMTP server
+  port: 587, // TLS port
+  secure: false, // Use TLS
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_APP_PASSWORD
+  },
+  tls: {
+    ciphers: 'SSLv3'
   }
 })
 
