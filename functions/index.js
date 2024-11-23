@@ -608,17 +608,17 @@ exports.checkAndResetStreaks = onSchedule(
             batch.update(habitDoc.ref, { streak: 0 })
             updatedCount++
           }
+        }
 
-          // Commit batch every 500 operations to avoid hitting limits
-          if (updatedCount > 0 && updatedCount % 500 === 0) {
-            await batch.commit()
-            batch = db.batch()
-          }
+        // Commit batch every 20 operations
+        if (updatedCount > 0 && updatedCount % 20 === 0) {
+          await batch.commit()
+          batch = db.batch()
         }
       }
 
-      // Commit batch every 20 operations
-      if (updatedCount > 0 && updatedCount % 20 === 0) {
+      // Commit remaining batch operations
+      if (updatedCount > 0) {
         await batch.commit()
         batch = db.batch()
       }
