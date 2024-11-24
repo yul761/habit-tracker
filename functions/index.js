@@ -154,8 +154,6 @@ async function sendNotifications(notificationType) {
       })
 
       for (const habit of dueHabits) {
-        const message = habit.task
-
         if (user.notifyThroughEmail && user.email) {
           // const brandingLogo = await getLogoUrl('favcon-no-background.png')
           let brandingLogo
@@ -212,9 +210,12 @@ async function sendNotifications(notificationType) {
         }
 
         if (user.notifyThroughSms && user.phoneNumber) {
+          const smsMessage = `Habit Hub Reminder: Time to ${habit.task}!
+            🔥 Current streak: ${habit.streak} days
+            Complete now: https://habit-hub.ca`
           notifications.push(
             twilioClient.messages.create({
-              body: message,
+              body: smsMessage,
               from: TWILIO_PHONE_NUMBER,
               to: user.phoneNumber
             })
