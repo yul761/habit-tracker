@@ -37,6 +37,7 @@ export default defineConfig({
           ],
           // Authentication related components
           auth: [
+            './src/components/Dropdown/ButtonDropdown.vue',
             './src/components/Authentication/LogInDropdown.vue',
             './src/views/SignUpView.vue',
             './src/views/PasswordResetView.vue',
@@ -57,7 +58,6 @@ export default defineConfig({
           // Common UI components
           ui: [
             './src/components/BreadCrumb/BreadCrumb.vue',
-            './src/components/Dropdown/ButtonDropdown.vue',
             './src/components/Dropdown/TextDropdown.vue',
             './src/components/Header/ViewHeader.vue',
             './src/components/Inputs/PhoneInputs.vue'
