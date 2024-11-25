@@ -44,11 +44,23 @@
 import { ref } from 'vue'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '@/firebase/firebase.base'
+import { useHead } from '@unhead/vue'
 
 const email = ref('')
 const loading = ref(false)
 const emailError = ref('')
 const isSuccess = ref(false)
+
+useHead({
+  title: 'Reset Password',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Securely reset your password for your Habit-Hub account. Follow the simple steps to receive a password reset link via email.'
+    }
+  ]
+})
 
 const resetForm = () => {
   isSuccess.value = false

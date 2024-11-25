@@ -60,6 +60,7 @@ import { ref, onMounted, computed, reactive, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { getUserById, updateUser } from '@/firebase/firebase.user.db'
 import PhoneInputs from '@/components/Inputs/PhoneInputs.vue'
+import { useHead } from '@unhead/vue'
 
 const authStore = useAuthStore()
 const loading = ref(false)
@@ -71,6 +72,17 @@ const phoneNumber = ref('')
 const emailUpdates = ref(false)
 const smsUpdates = ref(false)
 const isPhoneNumberValid = ref(true)
+
+useHead({
+  title: () => (displayName.value ? `${displayName.value}'s Profile` : 'User Profile'),
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Manage your personal information and notification preferences for your habit tracking account.'
+    }
+  ]
+})
 
 const initialData = reactive({
   displayName: '',

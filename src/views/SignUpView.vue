@@ -78,6 +78,7 @@
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { FirebaseError } from 'firebase/app'
+import { useHead } from '@unhead/vue'
 
 const authStore = useAuthStore()
 const email = ref('')
@@ -93,6 +94,15 @@ const signupError = ref('')
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
 
+useHead({
+  title: 'Sign Up',
+  meta: [
+    {
+      name: 'description',
+      content: 'Create a new account to start your self-improvement journey with Habit-Hub.'
+    }
+  ]
+})
 const handleSignUp = async () => {
   emailError.value = ''
   passwordError.value = ''

@@ -25,6 +25,7 @@ import HabitForm from '@/components/HabitForm/HabitForm.vue'
 import { emptyHabitData } from '@/firebase/habit.template'
 import { useRoute } from 'vue-router'
 import { getHabit, updateHabit } from '@/firebase/firebase.habit.db'
+import { useHead } from '@unhead/vue'
 
 const habit = reactive<HabitTableData>(emptyHabitData())
 const initialHabit = reactive<HabitTableData>(emptyHabitData())
@@ -33,6 +34,16 @@ const isUpdating = ref(false)
 
 const units = Object.values(Unit)
 const frequencies = Object.values(Frequency)
+
+useHead({
+  title: () => habit.task ?? 'Habit Details',
+  meta: [
+    {
+      name: 'description',
+      content: 'View and edit habit details'
+    }
+  ]
+})
 
 const router = useRoute()
 const isModified = computed(() => {

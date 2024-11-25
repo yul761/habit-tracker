@@ -28,6 +28,7 @@ import { auth } from '@/firebase/firebase.base'
 import { onAuthStateChanged } from 'firebase/auth'
 import { createHabit } from '@/firebase/firebase.habit.db'
 import router from '@/router'
+import { useHead } from '@unhead/vue'
 
 const authStore = useAuthStore()
 const habit = reactive<HabitTableData>(emptyHabitData())
@@ -35,6 +36,16 @@ const initialHabit = reactive<HabitTableData>(emptyHabitData())
 
 const units = Object.values(Unit)
 const frequencies = Object.values(Frequency)
+
+useHead({
+  title: 'New Habit',
+  meta: [
+    {
+      name: 'description',
+      content: 'Create a new habit to track your progress and improve your life.'
+    }
+  ]
+})
 
 const findDifferences = (obj1: HabitTableData, obj2: HabitTableData) => {
   const differences: Record<string, any> = {}

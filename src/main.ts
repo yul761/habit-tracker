@@ -2,8 +2,9 @@ import './assets/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import '@fortawesome/fontawesome-free/css/all.css'
-import { createApp, watch } from 'vue'
+import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { createHead } from '@unhead/vue'
 
 // Vuetify
 import 'vuetify/styles'
@@ -20,9 +21,11 @@ const vuetify = createVuetify({
   components,
   directives
 })
+const head = createHead()
 
 const app = createApp(App)
 app.use(createPinia())
+app.use(head)
 
 const authStore = useAuthStore()
 authStore.initializeAuth()

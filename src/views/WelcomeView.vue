@@ -58,6 +58,18 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Welcome to HabitHub',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Start your self-improvement journey with HabitHub. Create, track, and maintain positive habits to transform your life.'
+    }
+  ]
+})
 
 const features = ref([
   {
